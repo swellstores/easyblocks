@@ -339,6 +339,7 @@ export type InlineTypeWidgetComponentProps<
 > = {
   value: Type;
   onChange: (newValue: Type) => void;
+  label?: string;
 };
 
 export type TokenTypeWidgetComponentProps<

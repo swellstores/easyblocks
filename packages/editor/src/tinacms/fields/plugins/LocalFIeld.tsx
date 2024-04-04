@@ -54,6 +54,7 @@ const LocalFieldPlugin = {
             widgetId: input.value.widgetId,
           });
         }}
+        label={field.label}
       />
     );
   }),
