@@ -26,4 +26,9 @@ export type EasyblocksEditorProps = {
   canvasURL?: string;
   isCanvas?: boolean;
   __debug?: boolean;
+  rootTemplate?: string;
+  rootComponent?: string;
+  locale?: string;
+  documentId?: string;
+  readOnly?: boolean;
 };

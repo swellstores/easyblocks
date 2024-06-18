@@ -74,6 +74,11 @@ export function EasyblocksEditor(props: EasyblocksEditorProps) {
           widgets={props.widgets}
           components={props.components}
           canvasURL={props.canvasURL}
+          readOnly={props.readOnly}
+          locale={props.locale}
+          documentId={props.documentId}
+          rootTemplate={props.rootTemplate}
+          rootComponent={props.rootComponent}
         />
       )}
 

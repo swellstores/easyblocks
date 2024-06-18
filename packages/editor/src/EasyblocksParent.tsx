@@ -32,6 +32,11 @@ type EasyblocksParentProps = {
   >;
   components?: Record<string, ComponentType<any>>;
   canvasURL?: string;
+  locale?: string;
+  documentId?: string;
+  rootComponent?: string;
+  rootTemplate?: string;
+  readOnly?: boolean;
 };
 
 const shouldForwardProp: ShouldForwardProp<"web"> = (propName, target) => {
@@ -71,11 +76,15 @@ export function EasyblocksParent(props: EasyblocksParentProps) {
           />
           <Editor
             config={props.config}
-            locale={editorSearchParams.locale ?? undefined}
-            readOnly={editorSearchParams.readOnly ?? true}
-            documentId={editorSearchParams.documentId}
-            rootComponentId={editorSearchParams.rootComponentId ?? null}
-            rootTemplateId={editorSearchParams.rootTemplateId}
+            locale={props.locale || editorSearchParams.locale || undefined}
+            readOnly={props.readOnly ?? editorSearchParams.readOnly ?? true}
+            documentId={props.documentId ?? editorSearchParams.documentId}
+            rootComponentId={
+              props.rootComponent ?? editorSearchParams.rootComponentId ?? null
+            }
+            rootTemplateId={
+              props.rootTemplate ?? editorSearchParams.rootTemplateId
+            }
             externalData={props.externalData}
             onExternalDataChange={props.onExternalDataChange}
             widgets={{
