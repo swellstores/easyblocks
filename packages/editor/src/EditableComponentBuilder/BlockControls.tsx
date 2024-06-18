@@ -148,10 +148,11 @@ export function BlocksControls({
 
   const focusOnBlock = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
-    event.preventDefault();
 
     if (isActive) {
       return;
+    } else {
+      event.preventDefault();
     }
 
     const closestEditableElementFromTarget = (
