@@ -1,11 +1,12 @@
 {
   "name": "@easyblocks/utils",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
   "main": "src/index.ts",
   "sideEffects": false,
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "check": "tsc && eslint --quiet src/"
   },
   "dependencies": {
     "react": "^18.2.0"
