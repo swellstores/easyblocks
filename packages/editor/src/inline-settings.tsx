@@ -18,12 +18,7 @@ export function InlineSettings({ fields }: InlineSettingsProps) {
   }
 
   return (
-    <StyleReset
-      onClick={(e: MouseEvent) => {
-        e.stopPropagation();
-      }}
-      style={{ height: "100%" }}
-    >
+    <StyleReset style={{ height: "100%" }}>
       {/* IMPORTANT: This stop propagation fixes issues with toggle unclicking */}
       <SettingsContent fields={fields} />
     </StyleReset>
