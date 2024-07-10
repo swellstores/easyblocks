@@ -207,6 +207,8 @@ function EditorBackendInitializer(props: EditorProps) {
           }
 
           setDocument(document);
+        } else {
+          setDocument(null);
         }
       } catch (error) {
         console.error(error);
@@ -220,7 +222,7 @@ function EditorBackendInitializer(props: EditorProps) {
     }
 
     run();
-  }, []);
+  }, [props.documentId]);
 
   if (!enabled) {
     return <AuthenticationScreen>Loading...</AuthenticationScreen>;
