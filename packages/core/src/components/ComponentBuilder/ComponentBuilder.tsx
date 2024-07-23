@@ -460,6 +460,9 @@ function getComponent(
   isEditing: boolean
 ) {
   let component: any;
+  if (!componentDefinition) {
+    return;
+  }
 
   // We first try to find editor version of that component
   if (isEditing) {
