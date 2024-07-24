@@ -1,4 +1,4 @@
-import type { WidgetComponentProps } from "@easyblocks/core";
+import type { WidgetComponentProps } from "@swell/easyblocks-core";
 import { MediaPicker } from "./MediaPicker";
 
 export function MockVideoPicker({

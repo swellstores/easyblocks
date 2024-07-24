@@ -1,7 +1,7 @@
 import {
   ChildComponentEditingInfo,
   NoCodeComponentDefinition,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import { gridStyles } from "./Grid.styles";
 import { gridAuto } from "./Grid.auto";
 import { GridCompiledValues, GridParams } from "./Grid.types";

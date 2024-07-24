@@ -1,4 +1,4 @@
-import { EditingInfo, SchemaProp } from "@easyblocks/core";
+import { EditingInfo, SchemaProp } from "@swell/easyblocks-core";
 import { pxValueNormalize } from "@/app/easyblocks/components/utils/pxValueNormalize";
 import { getFieldProvider } from "@/app/easyblocks/components/utils/getFieldProvider";
 

@@ -1,4 +1,4 @@
-import { responsiveValueForceGet } from "@easyblocks/core";
+import { responsiveValueForceGet } from "@swell/easyblocks-core";
 import { Colors, Fonts, Icons } from "@easyblocks/design-system";
 import { dotNotationGet, toArray } from "@easyblocks/utils";
 import React from "react";

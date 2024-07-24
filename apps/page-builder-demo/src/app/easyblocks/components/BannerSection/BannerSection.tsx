@@ -3,7 +3,7 @@ import {
   SectionProps,
   SectionWrapper,
 } from "@/app/easyblocks/components/utils/sectionWrapper/SectionWrapper";
-import { NoCodeComponentProps } from "@easyblocks/core";
+import { NoCodeComponentProps } from "@swell/easyblocks-core";
 
 export function BannerSection(
   props: NoCodeComponentProps & Record<string, any> & SectionProps

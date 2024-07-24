@@ -1,11 +1,11 @@
-import { SchemaProp } from "@easyblocks/core";
+import { SchemaProp } from "@swell/easyblocks-core";
 import {
   CompilationContextType,
   InternalRenderableComponentDefinition,
   PathInfo,
   findComponentDefinitionById,
   parsePath,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { dotNotationGet } from "@easyblocks/utils";
 import { Form } from "../form";
 import { insertCommand } from "./insert";

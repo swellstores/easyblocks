@@ -2,7 +2,7 @@ import {
   SectionProps,
   SectionWrapper,
 } from "@/app/easyblocks/components/utils/sectionWrapper/SectionWrapper";
-import { NoCodeComponentProps } from "@easyblocks/core";
+import { NoCodeComponentProps } from "@swell/easyblocks-core";
 
 function TwoCards(
   props: NoCodeComponentProps & Record<string, any> & SectionProps

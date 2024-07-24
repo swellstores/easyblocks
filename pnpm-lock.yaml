@@ -128,15 +128,9 @@ importers:
 
   apps/dashboard-demo:
     dependencies:
-      '@easyblocks/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@easyblocks/design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
-      '@easyblocks/editor':
-        specifier: workspace:*
-        version: link:../../packages/editor
       '@radix-ui/react-dialog':
         specifier: ^1.0.5
         version: 1.0.5(@types/react-dom@18.2.14)(@types/react@18.2.42)(react-dom@18.2.0)(react@18.2.0)
@@ -146,6 +140,12 @@ importers:
       '@radix-ui/themes':
         specifier: ^2.0.0
         version: 2.0.3(@types/react-dom@18.2.14)(@types/react@18.2.42)(react-dom@18.2.0)(react@18.2.0)
+      '@swell/easyblocks-core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@swell/easyblocks-editor':
+        specifier: workspace:*
+        version: link:../../packages/editor
       '@types/node':
         specifier: 20.8.7
         version: 20.8.7
@@ -221,10 +221,10 @@ importers:
 
   apps/liquid-demo:
     dependencies:
-      '@easyblocks/core':
+      '@swell/easyblocks-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@easyblocks/editor':
+      '@swell/easyblocks-editor':
         specifier: workspace:*
         version: link:../../packages/editor
       '@types/node':
@@ -272,13 +272,13 @@ importers:
 
   apps/page-builder-demo:
     dependencies:
-      '@easyblocks/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@easyblocks/design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
-      '@easyblocks/editor':
+      '@swell/easyblocks-core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@swell/easyblocks-editor':
         specifier: workspace:*
         version: link:../../packages/editor
       '@types/node':
@@ -333,10 +333,10 @@ importers:
 
   apps/quick-start:
     dependencies:
-      '@easyblocks/core':
+      '@swell/easyblocks-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@easyblocks/editor':
+      '@swell/easyblocks-editor':
         specifier: workspace:*
         version: link:../../packages/editor
       '@types/node':
@@ -424,16 +424,16 @@ importers:
         specifier: ^7.15.0
         version: 7.21.0(@babel/core@7.21.3)
       '@easyblocks/build-tools':
-        specifier: workspace:*
+        specifier: 1.0.10-alpha.0
         version: link:../build-tools
       '@easyblocks/reduce-css-calc':
-        specifier: workspace:*
+        specifier: 1.0.10-alpha.0
         version: link:../reduce-css-calc
       '@easyblocks/test-utils':
-        specifier: workspace:*
+        specifier: 1.0.10-alpha.0
         version: link:../test-utils
       '@easyblocks/utils':
-        specifier: workspace:*
+        specifier: 1.0.10-alpha.0
         version: link:../utils
       '@jest/types':
         specifier: ^26.6.2
@@ -526,11 +526,8 @@ importers:
       '@dnd-kit/sortable':
         specifier: ^7.0.2
         version: 7.0.2(@dnd-kit/core@6.0.8)(react@18.2.0)
-      '@easyblocks/core':
-        specifier: workspace:*
-        version: link:../core
       '@easyblocks/design-system':
-        specifier: workspace:*
+        specifier: 1.0.10-alpha.0
         version: link:../design-system
       '@emotion/is-prop-valid':
         specifier: ^1.2.1
@@ -544,6 +541,9 @@ importers:
       '@react-aria/tooltip':
         specifier: ^3.1.8
         version: 3.4.0(react@18.2.0)
+      '@swell/easyblocks-core':
+        specifier: workspace:*
+        version: link:../core
       final-form:
         specifier: ^4.20.4
         version: 4.20.9
@@ -579,10 +579,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@easyblocks/build-tools':
-        specifier: workspace:*
+        specifier: 1.0.10-alpha.0
         version: link:../build-tools
       '@easyblocks/utils':
-        specifier: workspace:*
+        specifier: 1.0.10-alpha.0
         version: link:../utils
       '@jest/types':
         specifier: ^26.6.2

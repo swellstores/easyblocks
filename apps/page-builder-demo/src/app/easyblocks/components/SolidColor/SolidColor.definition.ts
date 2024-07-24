@@ -1,4 +1,4 @@
-import { NoCodeComponentDefinition, TokenValue } from "@easyblocks/core";
+import { NoCodeComponentDefinition, TokenValue } from "@swell/easyblocks-core";
 import { solidColorStyles } from "./SolidColor.styles";
 
 const solidColorComponentDefinition: NoCodeComponentDefinition = {

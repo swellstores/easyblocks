@@ -1,4 +1,4 @@
-import { DeviceRange, NoCodeComponentDefinition } from "@easyblocks/core";
+import { DeviceRange, NoCodeComponentDefinition } from "@swell/easyblocks-core";
 
 import { bannerCardDefinition } from "@/app/easyblocks/components/BannerCard/BannerCard.definition";
 import {

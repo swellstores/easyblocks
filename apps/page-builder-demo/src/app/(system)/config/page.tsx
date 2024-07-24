@@ -2,8 +2,8 @@
 
 import { components } from "@/app/easyblocks/components";
 import { easyblocksConfig } from "@/app/easyblocks/easyblocks.config";
-import { ExternalData } from "@easyblocks/core";
-import { EasyblocksEditor } from "@easyblocks/editor";
+import { ExternalData } from "@swell/easyblocks-core";
+import { EasyblocksEditor } from "@swell/easyblocks-editor";
 import { useState } from "react";
 import { mockImageWidget } from "../../easyblocks/externalData/mockMedia/mockImageWidget";
 import { MockImagePicker } from "../../easyblocks/externalData/mockMedia/MockImagePicker";

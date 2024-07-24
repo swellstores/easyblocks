@@ -1,7 +1,7 @@
 "use client";
 
-import { EasyblocksEditor } from "@easyblocks/editor";
-import { Config, EasyblocksBackend } from "@easyblocks/core";
+import { EasyblocksEditor } from "@swell/easyblocks-editor";
+import { Config, EasyblocksBackend } from "@swell/easyblocks-core";
 import { ReactElement } from "react";
 
 if (!process.env.NEXT_PUBLIC_EASYBLOCKS_ACCESS_TOKEN) {

@@ -9,7 +9,7 @@ import {
   responsiveValueMap,
   responsiveValueFlatten,
   spacingToPx,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 
 import { responsiveAuto } from "../utils/responsiveAuto";
 import {

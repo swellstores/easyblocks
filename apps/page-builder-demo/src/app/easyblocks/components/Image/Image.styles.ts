@@ -1,7 +1,7 @@
 import type {
   NoCodeComponentStylesFunctionInput,
   NoCodeComponentStylesFunctionResult,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import { getPaddingBottomFromAspectRatio } from "../utils/parseAspectRatio";
 
 export function imageStyles({

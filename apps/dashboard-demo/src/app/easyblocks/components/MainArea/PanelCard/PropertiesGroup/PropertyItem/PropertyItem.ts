@@ -1,4 +1,4 @@
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 
 const propertyTextItem: NoCodeComponentDefinition = {
   id: "PropertyTextItem",

@@ -1,6 +1,6 @@
-import { CompilationContextType } from "@easyblocks/core/_internals";
-import { normalize } from "@easyblocks/core/_internals";
-import { NoCodeComponentEntry } from "@easyblocks/core";
+import { CompilationContextType } from "@swell/easyblocks-core/_internals";
+import { normalize } from "@swell/easyblocks-core/_internals";
+import { NoCodeComponentEntry } from "@swell/easyblocks-core";
 
 export function reconcile({
   context,

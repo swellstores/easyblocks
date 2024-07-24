@@ -1,4 +1,4 @@
-import { NoCodeComponentEntry, Document } from "@easyblocks/core";
+import { NoCodeComponentEntry, Document } from "@swell/easyblocks-core";
 import { deepClone, deepCompare, sleep } from "@easyblocks/utils";
 import { useEffect, useRef, useState } from "react";
 import { EditorContextType } from "./EditorContext";

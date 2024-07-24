@@ -2,10 +2,10 @@ import {
   EditorContextType,
   duplicateConfig,
   useEasyblocksCanvasContext,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { dotNotationGet, preOrderPathComparator } from "@easyblocks/utils";
 import { useEffect } from "react";
-import { AnyContextWithDefinitions } from "@easyblocks/core/";
+import { AnyContextWithDefinitions } from "@swell/easyblocks-core/";
 import { ExtraKeys, useWindowKeyDown } from "./useWindowKeyDown";
 
 const GLOBAL_SHORTCUTS_KEYS = [

@@ -3,7 +3,7 @@ import {
   FetchOutputResources,
   InlineTypeWidgetComponentProps,
   WidgetComponentProps,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   ModalContext,
   GlobalModalStyles,

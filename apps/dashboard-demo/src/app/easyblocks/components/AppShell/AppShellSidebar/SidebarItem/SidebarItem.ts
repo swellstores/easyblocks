@@ -1,4 +1,4 @@
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 import { createButtonDefinition } from "@/app/easyblocks/components/createButtonDefinition";
 
 const sidebarItemDefinition: NoCodeComponentDefinition = createButtonDefinition(

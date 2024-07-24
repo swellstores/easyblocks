@@ -1,5 +1,5 @@
 import { pxValueNormalize } from "@/app/easyblocks/components/utils/pxValueNormalize";
-import { SchemaProp } from "@easyblocks/core";
+import { SchemaProp } from "@swell/easyblocks-core";
 
 export const cornerSchemaProps: SchemaProp[] = [
   {

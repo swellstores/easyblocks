@@ -2,7 +2,7 @@ import {
   getDevicesWidths,
   NoCodeComponentAutoFunctionInput,
   responsiveValueGetDefinedValue,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import { DecomposedValues } from "../utils/decomposeValues";
 import {
   ResponsiveAutoCallback,

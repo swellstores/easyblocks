@@ -91,7 +91,7 @@ const easyblocksConfig: Config = {
 }
 
 // Widget's component
-import { WidgetComponentProps } from "@easyblocks/core";
+import { WidgetComponentProps } from "@swell/easyblocks-core";
 
 function ProductPickerWidget(props: WidgetComponentProps<string>) {
   return null;
@@ -111,7 +111,7 @@ After these changes, our `ProductPickerWidget` is rendered instead of the error 
 Let's implement a simple widget component using `select` element:
 
 ```tsx
-import { WidgetComponentProps } from "@easyblocks/core";
+import { WidgetComponentProps } from "@swell/easyblocks-core";
 import { SimplePicker } from "@easyblocks/design-system";
 
 const products = [
@@ -200,7 +200,7 @@ This happens because by default each custom type field is **required**, which me
 
 However, even if you select a value for `product` field, the component still won't render. It happens because Easyblocks doesn't yet know how to fetch the actual data. To resolve this issue we need to define a custom fetcher. Fetcher is a function that receives external references stored within No-Code Entry and resolves them to their external data. To define a fetcher for editor you need to specify `onExternalDataChange` prop.
 
-<pre class="language-tsx"><code class="lang-tsx"><strong>import { ExternalData } from '@easyblocks/core';
+<pre class="language-tsx"><code class="lang-tsx"><strong>import { ExternalData } from '@swell/easyblocks-core';
 </strong><strong>
 </strong><strong>// State variable for storing fetched external data during editing
 </strong><strong>const [externalDataValues, setExternalDataValues] = useState&#x3C;ExternalData>(
@@ -321,7 +321,7 @@ To build a simple usable widget component, Easyblocks comes with `SimplePicker` 
 &#x20;Let's use it now instead:
 
 ```tsx
-import { WidgetComponentProps } from "@easyblocks/core";
+import { WidgetComponentProps } from "@swell/easyblocks-core";
 import { SimplePicker } from "@easyblocks/design-system";
 
 const products = [
@@ -427,7 +427,7 @@ So far we've built a content that's static. Static images, static products, stat
 Let's use above `product` type as our example and define a new component `ProductPage`:
 
 ```typescript
-import type { Config } from "@easyblocks/core";
+import type { Config } from "@swell/easyblocks-core";
 
 const easyblocksConfig: Config = {
   ...,
@@ -481,7 +481,7 @@ import {
   Easyblocks,
   buildDocument,
   RequestedExternalData,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import { easyblocksConfig } from "./path-to-your-easyblocks-config";
 
 async function myFetcher(externalData: RequestedExternalData) {

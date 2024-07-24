@@ -1,4 +1,4 @@
-import { RequestedExternalData, ExternalData } from "@easyblocks/core";
+import { RequestedExternalData, ExternalData } from "@swell/easyblocks-core";
 import { MOCK_ASSETS } from "./mockAssets";
 
 export async function fetchMockVideos(

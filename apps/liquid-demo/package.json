@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@easyblocks/core": "workspace:*",
-    "@easyblocks/editor": "workspace:*",
+    "@swell/easyblocks-core": "workspace:*",
+    "@swell/easyblocks-editor": "workspace:*",
     "@types/node": "20.4.2",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",

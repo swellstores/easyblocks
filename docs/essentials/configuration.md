@@ -3,7 +3,7 @@
 The `Config` object in Easyblocks is a central object that holds all the essential configuration settings. It's a parameter required by `EasyblocksEditor` ([Editor Page](editor-page.md)) and `buildDocument` ([Rendering Content](rendering-content.md)).&#x20;
 
 ```typescript
-import type { Config } from "@easyblocks/core";
+import type { Config } from "@swell/easyblocks-core";
 
 export const easyblocksConfig: Config = {
   /* config properties */
@@ -17,7 +17,7 @@ export const easyblocksConfig: Config = {
 Sets the backend service responsible for saving, updating and versioning documents and templates. Please read [Backend](backend.md) guide to learn more.
 
 ```typescript
-import type { Config, EasyblocksBackend } from "@easyblocks/core";
+import type { Config, EasyblocksBackend } from "@swell/easyblocks-core";
 
 const config: Config = {
   backend: new EasyblocksBackend({ accessToken: MY_ACCESS_TOKEN }),
@@ -30,7 +30,7 @@ const config: Config = {
 All the [No-Code Component Definitions](no-code-components/) available in your setup must be provided in `components` property:
 
 ```typescript
-import type { Config } from '@easyblocks/core';
+import type { Config } from '@swell/easyblocks-core';
 
 const config: Config = {
   ...,
@@ -67,7 +67,7 @@ You can switch between different devices using the device switch from the top ba
 By default, Mobile Horizontal and Tablet Horizontal are hidden as we find them unnecessary to be visible out of the box. If you would like to have more control over your breakpoints you can make them visible by setting `hidden` property:
 
 ```typescript
-import type { Config } from '@easyblocks/core';
+import type { Config } from '@swell/easyblocks-core';
 
 const config: Config = {
   ...,
@@ -82,7 +82,7 @@ const config: Config = {
 
 List of available locales.
 
-<pre class="language-typescript"><code class="lang-typescript">import type { Config } from '@easyblocks/core';
+<pre class="language-typescript"><code class="lang-typescript">import type { Config } from '@swell/easyblocks-core';
 
 <strong>const config: Config = {
 </strong><strong>  ...,
@@ -106,7 +106,7 @@ List of available locales.
 Beside using built-in types provided by Eeasyblocks you can also define your own custom types for referencing external data. Learn more about custom types [here](external-data.md).
 
 ```typescript
-import type { Config } from '@easyblocks/core';
+import type { Config } from '@swell/easyblocks-core';
 
 const config: Config = {
   ...,
@@ -411,7 +411,7 @@ export const config: Config = {
 This property allows for setting templates. Read the [Templates](templates.md) section to learn more.
 
 ```typescript
-import type { Config } from '@easyblocks/core';
+import type { Config } from '@swell/easyblocks-core';
 import bannerTemplate1 from "bannerTemplate1.json"
 
 const config: Config = {

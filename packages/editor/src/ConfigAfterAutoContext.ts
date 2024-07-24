@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { NoCodeComponentEntry } from "@easyblocks/core";
+import { NoCodeComponentEntry } from "@swell/easyblocks-core";
 
 export const ConfigAfterAutoContext =
   React.createContext<NoCodeComponentEntry | null>(null);

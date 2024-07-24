@@ -1,4 +1,4 @@
-import { NoCodeComponentEntry } from "@easyblocks/core";
+import { NoCodeComponentEntry } from "@swell/easyblocks-core";
 import { deepCompare } from "@easyblocks/utils";
 
 const HISTORY_SIZE = 50;

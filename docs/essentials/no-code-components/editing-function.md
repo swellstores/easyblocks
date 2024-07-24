@@ -10,7 +10,7 @@ Each definition could define additional `editing` method. This method is respons
 Let's look at the `SimpleBanner` `editing` function:
 
 ```typescript
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 
 export const simpleBannerDefinition: NoCodeComponentDefinition = {
   // ...
@@ -107,7 +107,7 @@ Also you can modify `visible` flag to show and hide fields. You can do it based 
 Sometimes you might want to disable nested selection of child components. You can do it by setting `selectable: false` for a child component:
 
 ```typescript
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 
 export const simpleBannerDefinition: NoCodeComponentDefinition = {
   // ...

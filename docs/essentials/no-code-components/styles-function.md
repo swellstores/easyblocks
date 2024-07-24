@@ -12,7 +12,7 @@ Let's analyse the `styles` function of our `SimpleBanner` component:
 
 <pre class="language-typescript"><code class="lang-typescript">// No-Code Component Definition
 
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 
 <strong>export const simpleBannerDefinition: NoCodeComponentDefinition = {
 </strong>  // ...
@@ -94,7 +94,7 @@ If you want to compute some props that should be later passed to React component
 
 <pre class="language-typescript"><code class="lang-typescript">// No-Code Component Definition
 
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 
 <strong>export const simpleBannerDefinition: NoCodeComponentDefinition = {
 </strong>  // ...

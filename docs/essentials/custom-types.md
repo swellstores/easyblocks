@@ -35,7 +35,7 @@ const easyblocksConfig: Config = {
 Now let's define the widget UI component responsible for displaying the value for `url` field type and updating it:
 
 ```tsx
-import { InlineTypeWidgetComponentProps } from "@easyblocks/core";
+import { InlineTypeWidgetComponentProps } from "@swell/easyblocks-core";
 import { Input } from "@easyblocks/design-system";
 import { useEffect, useState } from "react";
 
@@ -177,7 +177,7 @@ const easyblocksConfig: Config = {
 Now we need to also define a UI responsible for rendering a custom input for `url` type:
 
 ```tsx
-import type { TokenTypeWidgetComponentProps } from "@easyblocks/core";
+import type { TokenTypeWidgetComponentProps } from "@swell/easyblocks-core";
 import { Input } from "@easyblocks/design-system";
 import { useState } from "react";
 

@@ -5,14 +5,14 @@
 Install the packages:
 
 ```bash
-npm install @easyblocks/editor @easyblocks/core
+npm install @swell/easyblocks-editor @swell/easyblocks-core
 ```
 
 Create the Editor page:
 
 ```typescript
-import { EasyblocksEditor } from "@easyblocks/editor";
-import { Config, EasyblocksBackend } from "@easyblocks/core";
+import { EasyblocksEditor } from "@swell/easyblocks-editor";
+import { Config, EasyblocksBackend } from "@swell/easyblocks-core";
 import { ReactElement } from "react";
 
 const easyblocksConfig: Config = {

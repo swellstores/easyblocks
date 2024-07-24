@@ -1,7 +1,7 @@
 import { EasyblocksContent } from "@/app/components/EasyblocksContent";
 import { LiveDataUpdater } from "@/app/LiveDataUpdater";
 import { NoDocumentError } from "@/app/NoDocumentError";
-import { buildDocument, ComponentOverrides } from "@easyblocks/core";
+import { buildDocument, ComponentOverrides } from "@swell/easyblocks-core";
 import { cookies } from "next/headers";
 import { buildAppShellContent } from "../../easyblocks/buildAppShellContent";
 import { easyblocksComponents } from "../../easyblocks/components";

@@ -7,13 +7,13 @@ import {
   useSensor,
 } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
-import { NoCodeComponentEntry, Easyblocks } from "@easyblocks/core";
+import { NoCodeComponentEntry, Easyblocks } from "@swell/easyblocks-core";
 import {
   EasyblocksMetadataProvider,
   configTraverse,
   itemMoved,
   useEasyblocksCanvasContext,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { useForceRerender } from "@easyblocks/utils";
 import React, { useEffect, useRef, useState } from "react";
 import { set, z } from "zod";

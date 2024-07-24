@@ -1,5 +1,5 @@
 import { imageComponentDefinition } from "@/app/easyblocks/components/Image/Image";
-import { Config, EasyblocksBackend } from "@easyblocks/core";
+import { Config, EasyblocksBackend } from "@swell/easyblocks-core";
 import { appShellDefinition } from "./components/AppShell/AppShell";
 import { appShellFooterDefinition } from "./components/AppShell/AppShellFooter/AppShellFooter";
 import { appShellHeaderDefinition } from "./components/AppShell/AppShellHeader/AppShellHeader";

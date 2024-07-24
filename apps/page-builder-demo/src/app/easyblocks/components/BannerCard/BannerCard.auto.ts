@@ -1,4 +1,4 @@
-import { NoCodeComponentAutoFunction } from "@easyblocks/core";
+import { NoCodeComponentAutoFunction } from "@swell/easyblocks-core";
 import { responsiveAuto } from "@/app/easyblocks/components/utils/responsiveAuto";
 
 export const bannerCardAuto: NoCodeComponentAutoFunction = ({

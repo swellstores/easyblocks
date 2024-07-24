@@ -1,4 +1,4 @@
-import { NoCodeComponentProps } from "@easyblocks/core";
+import { NoCodeComponentProps } from "@swell/easyblocks-core";
 import { ReactElement, useEffect } from "react";
 import { VideoSrc } from "../../externalData/types";
 import { useForceRerender } from "../../utils/useForceRerender";

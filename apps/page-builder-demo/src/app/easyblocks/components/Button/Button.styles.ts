@@ -1,7 +1,7 @@
 import type {
   NoCodeComponentStylesFunctionInput,
   NoCodeComponentStylesFunctionResult,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import { cleanupIconSVG } from "../utils/cleanupIconSVG";
 
 function buttonStyles({

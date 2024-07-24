@@ -1,4 +1,4 @@
-import { Template } from "@easyblocks/core";
+import { Template } from "@swell/easyblocks-core";
 import entry from "./NoomaBasicCard2Entry.json";
 
 export const NoomaBasicCard2: Template = {

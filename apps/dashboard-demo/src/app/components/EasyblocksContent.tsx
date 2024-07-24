@@ -1,6 +1,6 @@
 "use client";
 
-import { Easyblocks, easyblocksGetStyleTag } from "@easyblocks/core";
+import { Easyblocks, easyblocksGetStyleTag } from "@swell/easyblocks-core";
 import { useServerInsertedHTML } from "next/navigation";
 import { ComponentPropsWithoutRef } from "react";
 

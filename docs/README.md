@@ -49,7 +49,7 @@ Below we're showing a code of a very simple No-Code Component: `SimpleBanner`:
 ```tsx
 // No-Code Component Definition
 
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 
 export const simpleBannerDefinition: NoCodeComponentDefinition = {
   id: "SimpleBanner",

@@ -1,7 +1,7 @@
 "use client";
 
-import { EasyblocksEditor } from "@easyblocks/editor";
-import { Config, EasyblocksBackend } from "@easyblocks/core";
+import { EasyblocksEditor } from "@swell/easyblocks-editor";
+import { Config, EasyblocksBackend } from "@swell/easyblocks-core";
 import React, { ReactElement } from "react";
 import { Liquid } from "liquidjs";
 import { Parser, ProcessNodeDefinitions } from "html-to-react";

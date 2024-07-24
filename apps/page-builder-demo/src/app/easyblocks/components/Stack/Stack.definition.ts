@@ -1,7 +1,7 @@
 import {
   ChildComponentEditingInfo,
   NoCodeComponentDefinition,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import { stackStyles } from "./Stack.styles";
 import { StackCompiledValues, StackParams } from "./Stack.types";
 

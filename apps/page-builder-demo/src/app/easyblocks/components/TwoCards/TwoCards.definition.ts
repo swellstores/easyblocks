@@ -1,5 +1,5 @@
 import { twoCardsAuto } from "@/app/easyblocks/components/TwoCards/TwoCards.auto";
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 import { range } from "../../utils/range";
 import {
   SectionWrapperValues,

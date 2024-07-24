@@ -1,4 +1,4 @@
-import { NoCodeComponentDefinition, box } from "@easyblocks/core";
+import { NoCodeComponentDefinition, box } from "@swell/easyblocks-core";
 
 const separatorDefinition: NoCodeComponentDefinition = {
   id: "Separator",

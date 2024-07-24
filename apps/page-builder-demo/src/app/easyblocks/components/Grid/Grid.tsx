@@ -1,4 +1,4 @@
-import { NoCodeComponentProps } from "@easyblocks/core";
+import { NoCodeComponentProps } from "@swell/easyblocks-core";
 import React, { ReactElement } from "react";
 import {
   SectionProps,

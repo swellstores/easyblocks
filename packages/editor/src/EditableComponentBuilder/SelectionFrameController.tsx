@@ -2,7 +2,7 @@ import type { useSortable } from "@dnd-kit/sortable";
 import {
   selectionFramePositionChanged,
   useEasyblocksCanvasContext,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { Colors } from "@easyblocks/design-system";
 import React, { MouseEvent, ReactNode, useEffect, useState } from "react";
 

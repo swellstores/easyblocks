@@ -1,4 +1,8 @@
-import { RequestedExternalData, ExternalData, Widget } from "@easyblocks/core";
+import {
+  RequestedExternalData,
+  ExternalData,
+  Widget,
+} from "@swell/easyblocks-core";
 
 import { fetchProductsByIds } from "@/data/shopify";
 

@@ -1,4 +1,4 @@
-import { NoCodeComponentChangeFunction } from "@easyblocks/core";
+import { NoCodeComponentChangeFunction } from "@swell/easyblocks-core";
 import { TWO_CARDS_COL_NUM } from "./twoCardsConstants";
 
 type WidthRelatedValues = {

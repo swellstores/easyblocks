@@ -1,4 +1,4 @@
-import { RequestedExternalData, ExternalData } from "@easyblocks/core";
+import { RequestedExternalData, ExternalData } from "@swell/easyblocks-core";
 
 async function fetchAssets(externalData: RequestedExternalData) {
   const assetsExternals = Object.entries(externalData).filter(

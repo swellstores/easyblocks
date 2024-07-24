@@ -1,10 +1,10 @@
-import { SchemaProp } from "@easyblocks/core";
+import { SchemaProp } from "@swell/easyblocks-core";
 import {
   findComponentDefinitionById,
   isSchemaPropActionTextModifier,
   isSchemaPropTextModifier,
   parsePath,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { EditorContextType } from "./EditorContext";
 
 export function pathToCompiledPath(

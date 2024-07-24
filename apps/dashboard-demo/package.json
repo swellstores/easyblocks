@@ -9,9 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@easyblocks/core": "workspace:*",
+    "@swell/easyblocks-core": "workspace:*",
     "@easyblocks/design-system": "workspace:*",
-    "@easyblocks/editor": "workspace:*",
+    "@swell/easyblocks-editor": "workspace:*",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/themes": "^2.0.0",

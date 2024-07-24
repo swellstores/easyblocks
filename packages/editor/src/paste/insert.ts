@@ -3,12 +3,12 @@ import {
   NoCodeComponentEntry,
   ComponentSchemaProp,
   SchemaProp,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   CompilationContextType,
   duplicateConfig,
   findComponentDefinition,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { includesAny } from "@easyblocks/utils";
 import { Form } from "../form";
 import { normalizeToStringArray } from "../normalizeToStringArray";

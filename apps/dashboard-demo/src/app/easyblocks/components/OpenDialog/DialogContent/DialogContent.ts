@@ -1,4 +1,4 @@
-import { NoCodeComponentDefinition, box } from "@easyblocks/core";
+import { NoCodeComponentDefinition, box } from "@swell/easyblocks-core";
 
 const dialogContentDefinition: NoCodeComponentDefinition = {
   id: "DialogContent",

@@ -9,7 +9,7 @@ import {
   EasyblocksCanvasProvider,
   RichTextEditor,
   TextEditor,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import EditableComponentBuilder from "./EditableComponentBuilder/EditableComponentBuilder.editor";
 import TypePlaceholder from "./Placeholder";
 

@@ -1,5 +1,5 @@
 import { EditorContextType } from "./EditorContext";
-import { ComponentDefinitionShared } from "@easyblocks/core";
+import { ComponentDefinitionShared } from "@swell/easyblocks-core";
 import { normalizeToStringArray } from "./normalizeToStringArray";
 
 export function getAllComponentTypes(editorContext: EditorContextType) {

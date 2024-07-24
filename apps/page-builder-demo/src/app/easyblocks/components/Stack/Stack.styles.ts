@@ -1,8 +1,8 @@
 import type {
   NoCodeComponentStylesFunctionInput,
   NoCodeComponentStylesFunctionResult,
-} from "@easyblocks/core";
-import { spacingToPx } from "@easyblocks/core";
+} from "@swell/easyblocks-core";
+import { spacingToPx } from "@swell/easyblocks-core";
 import type { StackCompiledValues, StackParams } from "./Stack.types";
 
 export function stackStyles({

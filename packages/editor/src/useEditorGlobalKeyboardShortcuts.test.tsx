@@ -1,4 +1,4 @@
-import { NoCodeComponentEntry } from "@easyblocks/core";
+import { NoCodeComponentEntry } from "@swell/easyblocks-core";
 import { dotNotationSet } from "@easyblocks/utils";
 import { createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";

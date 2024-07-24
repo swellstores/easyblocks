@@ -10,7 +10,7 @@ import {
   responsiveValueFill,
   responsiveValueForceGet,
   responsiveValueGetDefinedValue,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   Colors,
   Input,

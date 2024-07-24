@@ -1,5 +1,5 @@
 "use client";
-import type { Widget, WidgetComponentProps } from "@easyblocks/core";
+import type { Widget, WidgetComponentProps } from "@swell/easyblocks-core";
 import { SimplePicker } from "@easyblocks/design-system";
 
 import {

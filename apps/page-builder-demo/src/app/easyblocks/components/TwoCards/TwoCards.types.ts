@@ -1,4 +1,4 @@
-import { Spacing } from "@easyblocks/core";
+import { Spacing } from "@swell/easyblocks-core";
 
 export type TwoCardsCompiledValues = {
   Card1: any[];

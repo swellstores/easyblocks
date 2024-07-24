@@ -1,11 +1,11 @@
 import { useDndContext } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
-import { PlaceholderAppearance } from "@easyblocks/core";
+import { PlaceholderAppearance } from "@swell/easyblocks-core";
 import {
   parsePath,
   useEasyblocksCanvasContext,
   useEasyblocksMetadata,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { Colors, Fonts } from "@easyblocks/design-system";
 import { toArray } from "@easyblocks/utils";
 import React from "react";

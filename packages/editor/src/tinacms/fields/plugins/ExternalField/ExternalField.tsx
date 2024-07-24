@@ -5,7 +5,7 @@ import {
   isEmptyExternalReference,
   isIdReferenceToDocumentExternalValue,
   isResolvedCompoundExternalDataValue,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import { Select, SelectItem } from "@easyblocks/design-system";
 import { dotNotationGet, toArray } from "@easyblocks/utils";
 import React, { ComponentType, useLayoutEffect } from "react";

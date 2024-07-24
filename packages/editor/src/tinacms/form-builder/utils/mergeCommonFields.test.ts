@@ -1,4 +1,4 @@
-import { AnyField } from "@easyblocks/core";
+import { AnyField } from "@swell/easyblocks-core";
 import { last } from "@easyblocks/utils";
 import type { MergeCommonFieldsParameters } from "./mergeCommonFields";
 import { mergeCommonFields } from "./mergeCommonFields";

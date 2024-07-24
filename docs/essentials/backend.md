@@ -8,7 +8,7 @@ The architecture of Easyblocks decouples the editor from the underlying backend 
 Easyblocks comes with a simple cloud service ([app.easyblocks.io](https://app.easyblocks.io)) that can be used in a following way:
 
 ```typescript
-import { Config, EasyblocksBackend } from "@easyblocks/core";
+import { Config, EasyblocksBackend } from "@swell/easyblocks-core";
 
 export const easyblocksConfig: Config = {
   backend: new EasyblocksBackend({

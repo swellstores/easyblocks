@@ -1,4 +1,4 @@
-import type { EditingInfoBase } from "@easyblocks/core";
+import type { EditingInfoBase } from "@swell/easyblocks-core";
 import { ADD_BUTTON_SIZE } from "./AddButton";
 
 function calculateAddButtonsProperties(

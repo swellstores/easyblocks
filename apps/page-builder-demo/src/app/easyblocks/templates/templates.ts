@@ -20,7 +20,7 @@ import { NoomaTwoCards1 } from "@/app/easyblocks/templates/nooma/TwoCards1/Nooma
 import { NoomaTwoCards2 } from "@/app/easyblocks/templates/nooma/TwoCards2/NoomaTwoCards2";
 import { NoomaTwoCards3 } from "@/app/easyblocks/templates/nooma/TwoCards3/NoomaTwoCards3";
 import { NoomaTwoCards4 } from "@/app/easyblocks/templates/nooma/TwoCards4/NoomaTwoCards4";
-import { Template } from "@easyblocks/core";
+import { Template } from "@swell/easyblocks-core";
 import BannerSection2_empty from "./basic/BannerSection2_empty.json";
 import BasicCard_empty from "./basic/BasicCard_empty.json";
 import Button_icon_standard from "./basic/Button_icon_standard.json";

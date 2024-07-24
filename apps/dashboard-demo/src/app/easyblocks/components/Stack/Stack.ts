@@ -2,7 +2,7 @@ import {
   ChildComponentEditingInfo,
   NoCodeComponentDefinition,
   spacingToPx,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 
 const maxWidthScale = ["max"];
 

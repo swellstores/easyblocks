@@ -2,7 +2,7 @@ import {
   Position,
   PositionHorizontal,
   PositionVertical,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import { Colors } from "@easyblocks/design-system";
 import * as RadixRadioGroup from "@radix-ui/react-radio-group";
 import React from "react";

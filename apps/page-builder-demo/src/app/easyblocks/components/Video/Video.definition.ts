@@ -1,4 +1,4 @@
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 import { VideoSrc } from "../../externalData/types";
 import { last } from "../../utils/last";
 import videoStyles from "./Video.styles";

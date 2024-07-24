@@ -1,4 +1,4 @@
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 
 const assetLinkDefinition: NoCodeComponentDefinition = {
   id: "AssetLink",

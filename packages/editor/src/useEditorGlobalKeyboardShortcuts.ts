@@ -1,7 +1,7 @@
 import {
   EditorContextType,
   duplicateConfig,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { dotNotationGet, preOrderPathComparator } from "@easyblocks/utils";
 import { useEffect } from "react";
 

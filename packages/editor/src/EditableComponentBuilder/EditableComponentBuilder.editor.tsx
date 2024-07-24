@@ -1,7 +1,7 @@
 import {
   ComponentBuilder,
   ComponentBuilderProps,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import React from "react";
 import { BlocksControls } from "./BlockControls";
 
