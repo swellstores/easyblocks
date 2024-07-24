@@ -29,10 +29,10 @@
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/plugin-transform-runtime": "^7.15.0",
-    "@easyblocks/build-tools": "workspace:*",
-    "@easyblocks/reduce-css-calc": "workspace:*",
-    "@easyblocks/test-utils": "workspace:*",
-    "@easyblocks/utils": "workspace:*",
+    "@easyblocks/build-tools": "1.0.10-alpha.0",
+    "@easyblocks/reduce-css-calc": "1.0.10-alpha.0",
+    "@easyblocks/test-utils": "1.0.10-alpha.0",
+    "@easyblocks/utils": "1.0.10-alpha.0",
     "@jest/types": "^26.6.2",
     "@types/crypto-js": "^4.1.1",
     "@types/jest": "^26.0.20",
@@ -65,5 +65,6 @@
     "dist/",
     "package.json",
     "LICENSE.md"
-  ]
+  ],
+  "gitHead": "86ee9dc93b7e9ea0067b82d9a229090b153416fb"
 }
