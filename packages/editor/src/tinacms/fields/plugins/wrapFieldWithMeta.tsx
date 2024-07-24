@@ -10,11 +10,11 @@ import {
   isTrulyResponsiveValue,
   responsiveValueFindDeviceWithDefinedValue,
   responsiveValueForceGet,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   InternalField,
   isExternalSchemaProp,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import {
   Fonts,
   Loader,

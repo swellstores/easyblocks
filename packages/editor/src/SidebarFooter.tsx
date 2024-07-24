@@ -1,8 +1,8 @@
-import { NoCodeComponentEntry } from "@easyblocks/core";
+import { NoCodeComponentEntry } from "@swell/easyblocks-core";
 import {
   findComponentDefinition,
   stripRichTextPartSelection,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import {
   ButtonPrimary,
   ButtonSecondary,

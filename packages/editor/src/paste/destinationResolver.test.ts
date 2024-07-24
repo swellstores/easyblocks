@@ -1,4 +1,4 @@
-import { CompilationContextType } from "@easyblocks/core/_internals";
+import { CompilationContextType } from "@swell/easyblocks-core/_internals";
 import { testEditorContext } from "../utils/tests";
 import { destinationResolver } from "./destinationResolver";
 import { Form } from "../form";

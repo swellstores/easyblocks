@@ -1,4 +1,4 @@
-import { InternalField } from "@easyblocks/core/_internals";
+import { InternalField } from "@swell/easyblocks-core/_internals";
 import React from "react";
 import { Form, FormOptions } from "../../form";
 

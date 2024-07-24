@@ -5,7 +5,7 @@
 In order to render the Easyblocks document it must first go through a so-called "build phase", which is done by `buildDocument` function from our SDK. This function prepares the document for rendering:
 
 ```typescript
-import { buildDocument } from "@easyblocks/core";
+import { buildDocument } from "@swell/easyblocks-core";
 
 const { renderableDocument } = await buildDocument({
   documentId: "<your_document_id>",
@@ -27,7 +27,7 @@ The result of `buildDocument` is an object with a property `renderableDocument` 
 Rendering content is dona via `Easyblocks` component:
 
 ```tsx
-import { Easyblocks } from "@easyblocks/core";
+import { Easyblocks } from "@swell/easyblocks-core";
 
 <Easyblocks
   renderableDocument={renderableDocument}

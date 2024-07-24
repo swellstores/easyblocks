@@ -5,7 +5,7 @@ In order to use Easyblocks your project must have a dedicated page that contains
 Creating the editor page is simple:
 
 ```tsx
-import { EasyblocksEditor } from "@easyblocks/editor";
+import { EasyblocksEditor } from "@swell/easyblocks-editor";
 import { easyblocksConfig } from "../easyblocks.config.ts";
 
 function EditorPage() {

@@ -1,5 +1,5 @@
 {
-  "name": "@easyblocks/core",
+  "name": "@swell/easyblocks-core",
   "type": "module",
   "version": "1.0.9",
   "description": "No-code ecommerce builder for headless CMS",

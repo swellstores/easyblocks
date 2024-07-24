@@ -3,7 +3,7 @@ import {
   Easyblocks,
   getDefaultLocale,
   type RenderableDocument,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import React, { useEffect, useState } from "react";
 import { parseQueryParams } from "./parseQueryParams";
 import { EasyblocksEditorProps } from "./EasyblocksEditorProps";
@@ -44,7 +44,9 @@ export const PreviewRenderer: React.FC<EasyblocksEditorProps> = (props) => {
       locale ?? getDefaultLocale(config.locales ?? []).code;
 
     (async () => {
-      const { buildDocument, buildEntry } = await import("@easyblocks/core");
+      const { buildDocument, buildEntry } = await import(
+        "@swell/easyblocks-core"
+      );
 
       if (mode === "document") {
         const { renderableDocument, externalData } = await buildDocument({

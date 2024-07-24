@@ -1,9 +1,9 @@
-import { NoCodeComponentEntry } from "@easyblocks/core";
+import { NoCodeComponentEntry } from "@swell/easyblocks-core";
 import {
   CompilationContextType,
   createTestCompilationContext,
   // @ts-ignore
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { configMap } from "./configMap";
 
 function createCard(color: string) {

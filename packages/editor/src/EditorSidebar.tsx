@@ -1,4 +1,4 @@
-import { CompiledComponentConfig } from "@easyblocks/core";
+import { CompiledComponentConfig } from "@swell/easyblocks-core";
 import { Fonts } from "@easyblocks/design-system";
 import { dotNotationGet } from "@easyblocks/utils";
 import React from "react";

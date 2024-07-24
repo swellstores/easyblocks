@@ -2,13 +2,13 @@ import {
   NoCodeComponentEntry,
   ComponentSchemaProp,
   isNoCodeComponentOfType,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   CompilationContextType,
   duplicateConfig,
   findComponentDefinitionById,
   parsePath,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import {
   dotNotationGet,
   last,

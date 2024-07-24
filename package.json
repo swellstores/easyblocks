@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "dev": "lerna run --stream dev --scope '@easyblocks/core' --scope '@easyblocks/editor'",
+    "dev": "lerna run --stream dev --scope '@swell/easyblocks-core' --scope '@swell/easyblocks-editor'",
     "nuke": "./scripts/nuke.sh",
     "clean": "./scripts/clean.sh",
     "build": "nx run-many --target build --exclude website",
@@ -12,7 +12,7 @@
     "lint:all": "nx run-many --target lint -- --quiet",
     "check": "nx run-many --target check",
     "prepare": "husky install",
-    "publish-prerelease": "lerna version prerelease && npm run build && lerna publish from-git",
+    "publish-prerelease": "lerna version --no-private && npm run build && lerna publish from-git",
     "supabase-start": "supabase start",
     "supabase-stop": "supabase stop",
     "supabase-restart": "npm run supabase-stop && npm run supabase-start"

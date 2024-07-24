@@ -1,4 +1,7 @@
-import { InternalAnyField, InternalField } from "@easyblocks/core/_internals";
+import {
+  InternalAnyField,
+  InternalField,
+} from "@swell/easyblocks-core/_internals";
 import { dotNotationGet } from "@easyblocks/utils";
 import { Config, FORM_ERROR, FormApi, FormState, createForm } from "final-form";
 import arrayMutators from "final-form-arrays";

@@ -3,11 +3,11 @@ import {
   SchemaProp,
   TrulyResponsiveValue,
   isTrulyResponsiveValue,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   CompilationContextType,
   findComponentDefinition,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 
 /**
  * Traverses recursively the config tree (similar to traverseConfig) but behaves like "Array.map". It returns new tree with elements mapped to new ones.

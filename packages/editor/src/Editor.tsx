@@ -22,7 +22,7 @@ import {
   normalizeInput,
   responsiveValueGet,
   validate,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   CanvasLoadedEvent,
   ChangeResponsiveEvent,
@@ -43,7 +43,7 @@ import {
   findComponentDefinitionById,
   parsePath,
   traverseComponents,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { Colors, Fonts, useToaster } from "@easyblocks/design-system";
 import { dotNotationGet, uniqueId, useForceRerender } from "@easyblocks/utils";
 import throttle from "lodash.throttle";

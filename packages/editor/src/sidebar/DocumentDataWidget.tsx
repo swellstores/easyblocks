@@ -2,8 +2,8 @@ import {
   getExternalReferenceLocationKey,
   isResolvedCompoundExternalDataValue,
   type ExternalDataCompoundResourceResolvedResult,
-} from "@easyblocks/core";
-import { findComponentDefinitionById } from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core";
+import { findComponentDefinitionById } from "@swell/easyblocks-core/_internals";
 import { Typography } from "@easyblocks/design-system";
 import { assertDefined, dotNotationGet } from "@easyblocks/utils";
 import React from "react";

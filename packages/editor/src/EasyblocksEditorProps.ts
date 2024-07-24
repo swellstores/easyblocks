@@ -5,7 +5,7 @@ import {
   ExternalData,
   InlineTypeWidgetComponentProps,
   WidgetComponentProps,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import React, { ComponentType } from "react";
 import { TemplatePicker } from "./TemplatePicker";
 

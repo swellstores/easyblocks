@@ -1,5 +1,5 @@
 {
-  "name": "@easyblocks/editor",
+  "name": "@swell/easyblocks-editor",
   "type": "module",
   "main": "dist/cjs/index.cjs",
   "module": "dist/es/index.js",
@@ -30,7 +30,7 @@
     "@babel/runtime": "^7.21.0",
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/sortable": "^7.0.2",
-    "@easyblocks/core": "workspace:*",
+    "@swell/easyblocks-core": "workspace:*",
     "@easyblocks/design-system": "workspace:*",
     "@emotion/is-prop-valid": "^1.2.1",
     "@popperjs/core": "^2.11.5",

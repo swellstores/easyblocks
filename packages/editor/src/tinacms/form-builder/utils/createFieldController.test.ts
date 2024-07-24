@@ -1,4 +1,4 @@
-import { AnyTinaField } from "@easyblocks/core";
+import { AnyTinaField } from "@swell/easyblocks-core";
 import {
   CompilationCache,
   CompilationCacheItemValue,
@@ -8,7 +8,7 @@ import {
   buildRichTextPartComponentConfig,
   compileInternal,
   normalize,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { dotNotationGet } from "@easyblocks/utils";
 import { EditorContextType } from "../../../EditorContext";
 import { isFieldPortal } from "../../../buildTinaFields";

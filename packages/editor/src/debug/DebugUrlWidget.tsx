@@ -1,5 +1,5 @@
 import React from "react";
-import { InlineTypeWidgetComponentProps } from "@easyblocks/core";
+import { InlineTypeWidgetComponentProps } from "@swell/easyblocks-core";
 import { useEffect, useState } from "react";
 import { Input } from "@easyblocks/design-system";
 

@@ -1,13 +1,13 @@
 import {
   CompiledShopstoryComponentConfig,
   EditingInfoBase,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   SelectionFramePositionChangedEvent,
   findComponentDefinitionById,
   isSchemaPropCollection,
   parsePath,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { dotNotationGet } from "@easyblocks/utils";
 import React, { useLayoutEffect } from "react";
 import { EditorContextType, useEditorContext } from "../EditorContext";

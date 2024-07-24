@@ -9,12 +9,12 @@ import {
   CompiledShopstoryComponentConfig,
   ComponentCollectionSchemaProp,
   SerializedRenderableComponentDefinition,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   parsePath,
   useEasyblocksCanvasContext,
   useEasyblocksMetadata,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { Colors } from "@easyblocks/design-system";
 import { toArray } from "@easyblocks/utils";
 import React, { Fragment } from "react";

@@ -1,4 +1,4 @@
-import { Devices } from "@easyblocks/core";
+import { Devices } from "@swell/easyblocks-core";
 import { resop2 } from "./resop";
 import { InternalRenderableComponentDefinition } from "./types";
 import { ScalarOrCollection } from "../types";

@@ -1,4 +1,4 @@
-import { Devices, Locale } from "@easyblocks/core";
+import { Devices, Locale } from "@swell/easyblocks-core";
 import {
   ButtonGhost,
   Colors,

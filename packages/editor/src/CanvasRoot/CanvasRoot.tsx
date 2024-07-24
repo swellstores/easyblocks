@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { useEasyblocksCanvasContext } from "@easyblocks/core/_internals";
+import { useEasyblocksCanvasContext } from "@swell/easyblocks-core/_internals";
 import { useCanvasGlobalKeyboardShortcuts } from "../useCanvasGlobalKeyboardShortcuts";
 
 type CanvasRootProps = {

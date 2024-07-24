@@ -12,7 +12,7 @@ import {
   useToaster,
 } from "@easyblocks/design-system";
 import { useEditorContext } from "./EditorContext";
-import { Backend } from "@easyblocks/core";
+import { Backend } from "@swell/easyblocks-core";
 
 type TemplateModalProps = {
   action: OpenTemplateModalAction;

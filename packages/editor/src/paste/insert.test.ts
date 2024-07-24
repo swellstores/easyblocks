@@ -1,8 +1,8 @@
 import {
   NoCodeComponentEntry,
   NoCodeComponentDefinition,
-} from "@easyblocks/core";
-import * as internals from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core";
+import * as internals from "@swell/easyblocks-core/_internals";
 import { uniqueId } from "@easyblocks/utils";
 import { Form } from "../form";
 import { insertCommand } from "./insert";

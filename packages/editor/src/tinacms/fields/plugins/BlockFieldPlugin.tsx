@@ -9,13 +9,13 @@ import {
   resolveExternalValue,
   resolveLocalisedValue,
   responsiveValueForceGet,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   Component$$$SchemaProp,
   InternalField,
   findComponentDefinition,
   isExternalSchemaProp,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import {
   ButtonGhost,
   Colors,

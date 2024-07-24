@@ -2,7 +2,7 @@ import { EditorContextType } from "./EditorContext";
 import {
   ComponentDefinitionShared,
   isNoCodeComponentOfType,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 
 export function getAllComponentsOfType(
   type: string,

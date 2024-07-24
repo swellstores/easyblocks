@@ -2,11 +2,11 @@ import {
   ComponentSchemaProp,
   Field,
   NoCodeComponentEntry,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   findComponentDefinitionById,
   parsePath,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { ButtonGhost, Icons, Typography } from "@easyblocks/design-system";
 import { toArray } from "@easyblocks/utils";
 import React, { useContext } from "react";

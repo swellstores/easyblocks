@@ -1,5 +1,5 @@
 // @ts-ignore
-import { CompilationContextType } from "@easyblocks/core/_internals";
+import { CompilationContextType } from "@swell/easyblocks-core/_internals";
 import { dotNotationGet } from "@easyblocks/utils";
 import {
   duplicateItems,

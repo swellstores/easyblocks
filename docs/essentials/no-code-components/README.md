@@ -11,7 +11,7 @@ Here's an example of a simple `SimpleBanner` No-Code Component (you can find it 
 
 <pre class="language-tsx"><code class="lang-tsx">// No-Code Component Definition
 
-import { NoCodeComponentDefinition } from "@easyblocks/core";
+import { NoCodeComponentDefinition } from "@swell/easyblocks-core";
 
 <strong>export const simpleBannerDefinition: NoCodeComponentDefinition = {
 </strong>  id: "SimpleBanner",

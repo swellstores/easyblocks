@@ -1,9 +1,12 @@
-import { CompiledCustomComponentConfig, FieldPortal } from "@easyblocks/core";
+import {
+  CompiledCustomComponentConfig,
+  FieldPortal,
+} from "@swell/easyblocks-core";
 import {
   InternalAnyTinaField,
   InternalField,
   stripRichTextPartSelection,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { dotNotationGet } from "@easyblocks/utils";
 import type { EditorContextType } from "./EditorContext";
 import { pathToCompiledPath } from "./pathToCompiledPath";

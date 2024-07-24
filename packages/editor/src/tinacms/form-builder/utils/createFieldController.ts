@@ -3,7 +3,7 @@ import {
   getFallbackLocaleForLocale,
   isTrulyResponsiveValue,
   responsiveValueGetDefinedValue,
-} from "@easyblocks/core";
+} from "@swell/easyblocks-core";
 import {
   CompilationCache,
   InternalAnyTinaField,
@@ -15,7 +15,7 @@ import {
   parsePath,
   richTextChangedEvent,
   traverseComponents,
-} from "@easyblocks/core/_internals";
+} from "@swell/easyblocks-core/_internals";
 import { dotNotationGet, last, toArray } from "@easyblocks/utils";
 import { EditorContextType } from "../../../EditorContext";
 import { getUniqueValues } from "../../fields/components/getUniqueValues";

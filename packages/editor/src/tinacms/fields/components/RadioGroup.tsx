@@ -1,5 +1,5 @@
-import { Option } from "@easyblocks/core";
-import { InternalField } from "@easyblocks/core/_internals";
+import { Option } from "@swell/easyblocks-core";
+import { InternalField } from "@swell/easyblocks-core/_internals";
 import { Icons, SelectInline, ToggleButton } from "@easyblocks/design-system";
 import React from "react";
 import { FieldMixedValue } from "../../../types";
