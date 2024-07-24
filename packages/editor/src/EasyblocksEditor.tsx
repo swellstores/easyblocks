@@ -79,6 +79,7 @@ export function EasyblocksEditor(props: EasyblocksEditorProps) {
           documentId={props.documentId}
           rootTemplate={props.rootTemplate}
           rootComponent={props.rootComponent}
+          pickers={props.pickers}
         />
       )}
 

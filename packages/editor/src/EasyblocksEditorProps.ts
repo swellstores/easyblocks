@@ -7,6 +7,7 @@ import {
   WidgetComponentProps,
 } from "@easyblocks/core";
 import React, { ComponentType } from "react";
+import { TemplatePicker } from "./TemplatePicker";
 
 export type ExternalDataChangeHandler = (
   externalData: RequestedExternalData,
@@ -25,6 +26,7 @@ export type EasyblocksEditorProps = {
   >;
   canvasURL?: string;
   isCanvas?: boolean;
+  pickers?: Record<string, TemplatePicker>;
   __debug?: boolean;
   rootTemplate?: string;
   rootComponent?: string;

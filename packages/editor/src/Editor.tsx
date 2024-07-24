@@ -91,6 +91,7 @@ import { useEditorHistory } from "./useEditorHistory";
 import { checkLocalesCorrectness } from "./utils/locales/checkLocalesCorrectness";
 import { removeLocalizedFlag } from "./utils/locales/removeLocalizedFlag";
 import { ZodNullDef } from "zod";
+import { TemplatePicker } from "./TemplatePicker";
 
 const ContentContainer = styled.div`
   position: relative;
@@ -183,6 +184,7 @@ type EditorProps = {
   >;
   components?: Record<string, ComponentType<any>>;
   canvasURL?: string;
+  pickers?: Record<string, TemplatePicker>;
 };
 
 export const Editor = EditorBackendInitializer;
@@ -1198,6 +1200,7 @@ const EditorContent = ({
                 <ModalPicker
                   onClose={closeComponentPickerModal}
                   config={componentPickerData.config}
+                  pickers={props.pickers}
                 />
               )}
             </SidebarAndContentContainer>
