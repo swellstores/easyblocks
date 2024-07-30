@@ -64,7 +64,7 @@ const baseConfig = {
     /@babel\/runtime/,
     /lodash/,
     /react-dom/,
-    /@easyblocks\/core/,
+    /@swell\/easyblocks-core/,
   ],
 };
 
