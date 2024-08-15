@@ -12,6 +12,7 @@ import { toArray } from "@easyblocks/utils";
 import React, { useContext, useRef } from "react";
 import type { FieldRenderProps } from "react-final-form";
 import { css } from "styled-components";
+
 import { useEditorContext } from "../../../EditorContext";
 import { isMixedFieldValue } from "../components/isMixedFieldValue";
 import { PanelContext } from "./BlockFieldPlugin";
@@ -58,9 +59,12 @@ function IdentityField({ input, field }: IdentityFieldProps) {
         (parentSchemaProp as ComponentSchemaProp).required
       : true);
 
-  const isNonChangable =
-    componentDefinition?.id === "@easyblocks/rich-text-part" ||
+  const isRootComponent =
     componentDefinition?.id === editorContext.rootComponent.id;
+  const isClosable = isRootComponent && editorContext.focussedField.length > 0;
+
+  const isNonChangable =
+    componentDefinition?.id === "@easyblocks/rich-text-part" || isRootComponent;
 
   function handleChangeComponentType() {
     if (isNonChangable) {
@@ -87,6 +91,18 @@ function IdentityField({ input, field }: IdentityFieldProps) {
   }
 
   function handleRemove() {
+    if (isClosable) {
+      window.parent.postMessage(
+        {
+          type: "@easyblocks-editor/toggle-settings",
+          payload: null,
+        },
+        "*"
+      );
+
+      return;
+    }
+
     if (isNonRemovable) {
       return;
     }
@@ -110,6 +126,7 @@ function IdentityField({ input, field }: IdentityFieldProps) {
       >
         {componentDefinition?.label ?? componentDefinition?.id}
       </Typography>
+
       {!isNonChangable && <Icons.ChevronDown size={16} />}
     </div>
   );
@@ -136,7 +153,7 @@ function IdentityField({ input, field }: IdentityFieldProps) {
             onClick={() => {
               panelContext.onClose();
             }}
-            css={`
+            css={css`
               margin-right: auto;
             `}
           />
@@ -145,9 +162,10 @@ function IdentityField({ input, field }: IdentityFieldProps) {
         {isNonChangable && (
           <div style={{ padding: "7px 6px" }}>{titleContent}</div>
         )}
+
         {!isNonChangable && (
           <ButtonGhost
-            ref={changeComponentButton}
+            title="Replace component"
             onClick={handleChangeComponentType}
           >
             {titleContent}
@@ -156,12 +174,13 @@ function IdentityField({ input, field }: IdentityFieldProps) {
 
         <ButtonGhost
           aria-label="Remove component"
-          icon={Icons.Remove}
+          title="Remove component"
+          icon={isClosable ? Icons.Close : Icons.Remove}
           onClick={handleRemove}
           css={css`
             margin-left: auto;
-            opacity: ${isNonRemovable ? 0 : 1};
-            pointer-events: ${isNonRemovable ? "none" : "auto"};
+            opacity: ${isNonRemovable && !isClosable ? 0 : 1};
+            pointer-events: ${isNonRemovable && !isClosable ? "none" : "auto"};
           `}
         />
       </div>

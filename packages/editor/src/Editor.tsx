@@ -925,157 +925,183 @@ const EditorContent = ({
         | MoveItemsEvent
         | LogSelectedEvent
     ) {
-      if (event.data.type === "@easyblocks-editor/remove-items") {
-        actions.removeItems(event.data.payload.paths);
-      }
-
-      if (event.data.type === "@easyblocks-editor/paste-items") {
-        console.log(focussedField);
-
-        actions.pasteItems(event.data.payload.configs);
-      }
-
-      if (event.data.type === "@easyblocks-editor/move-items") {
-        actions.moveItems(
-          event.data.payload.paths,
-          event.data.payload.direction
-        );
-      }
-
-      if (event.data.type === "@easyblocks-editor/log-selected-items") {
-        actions.logSelectedItems();
-      }
-
-      if (event.data.type === "@easyblocks-editor/canvas-loaded") {
-        setCanvasLoaded(true);
-      }
-
-      if (event.data.type === "@easyblocks-editor/form-change") {
-        if (event.data.payload.focussedField) {
-          actions.runChange(() => {
-            if (
-              event.data.type === "@easyblocks-editor/form-change" &&
-              Array.isArray(event.data.payload.focussedField)
-            ) {
-              form.change(event.data.payload.key, event.data.payload.value);
-              return event.data.payload.focussedField;
-            }
-          });
-        } else {
-          form.change(event.data.payload.key, event.data.payload.value);
-        }
-      }
-
-      if (event.data.type === "@easyblocks-editor/focus") {
-        handleSetFocussedField(event.data.payload.target);
-      }
-
-      if (event.data.type === "@easyblocks-editor/change-responsive") {
-        setCurrentViewport(event.data.payload.device);
-      }
-
-      if (event.data.type === "@easyblocks-editor/undo") {
-        undo();
-      }
-
-      if (event.data.type === "@easyblocks-editor/redo") {
-        redo();
-      }
-
-      if (event.data.type === "@easyblocks-editor/component-picker-opened") {
-        actions
-          .openComponentPicker({ path: event.data.payload.path })
-          .then((config) => {
-            const shopstoryCanvasIframe = window.document.getElementById(
-              "shopstory-canvas"
-            ) as HTMLIFrameElement | undefined;
-
-            shopstoryCanvasIframe?.contentWindow?.postMessage(
-              componentPickerClosed(config),
-              "*"
-            );
-          });
-      }
-
-      if (event.data.type === "@easyblocks-editor/item-inserted") {
-        actions.insertItem(event.data.payload);
-      }
-
-      if (event.data.type === "@easyblocks-editor/item-moved") {
-        const { fromPath, toPath, placement } = event.data.payload;
-
-        const fromPathParseResult = parsePath(fromPath, editorContext.form);
-        const toPathParseResult = parsePath(toPath, editorContext.form);
-
-        if (
-          !fromPathParseResult.parent ||
-          !toPathParseResult.parent ||
-          fromPathParseResult.index === undefined ||
-          toPathParseResult === undefined
-        ) {
-          return;
+      switch (event.data.type) {
+        case "@easyblocks-editor/remove-items": {
+          actions.removeItems(event.data.payload.paths);
+          break;
         }
 
-        if (fromPathParseResult.parent.path === toPathParseResult.parent.path) {
-          const pathToMove = `${
-            fromPathParseResult.parent.path
-              ? fromPathParseResult.parent.path + "."
-              : ""
-          }${fromPathParseResult.parent.fieldName}`;
+        case "@easyblocks-editor/paste-items": {
+          console.log(focussedField);
+          actions.pasteItems(event.data.payload.configs);
+          break;
+        }
 
-          actions.runChange(() => {
-            form.mutators.move(
-              pathToMove,
-              fromPathParseResult.index,
-              toPathParseResult.index
-            );
+        case "@easyblocks-editor/move-items": {
+          actions.moveItems(
+            event.data.payload.paths,
+            event.data.payload.direction
+          );
 
-            return [toPath];
-          });
-        } else {
-          // TODO: We should reuse logic of pasting items here, but we need to handle the case of pasting into placeholder (empty array)
-          const isToPathPlaceholder = toPathParseResult.fieldName !== undefined;
+          break;
+        }
 
-          const insertionPath = `${
-            toPathParseResult.parent.path === ""
-              ? ""
-              : toPathParseResult.parent.path + "."
-          }${toPathParseResult.parent.fieldName}${
-            isToPathPlaceholder
-              ? `.${toPathParseResult.index}.${toPathParseResult.fieldName}`
-              : ""
-          }`;
+        case "@easyblocks-editor/log-selected-items": {
+          actions.logSelectedItems();
+          break;
+        }
 
-          actions.runChange(() => {
-            const newConfig = duplicateConfig(
-              dotNotationGet(form.values, fromPath),
-              editorContext
-            );
+        case "@easyblocks-editor/canvas-loaded": {
+          setCanvasLoaded(true);
+          break;
+        }
 
-            const insertionIndex = calculateInsertionIndex(
-              fromPath,
-              toPath,
-              placement,
-              form
-            );
+        case "@easyblocks-editor/form-change": {
+          if (event.data.payload.focussedField) {
+            actions.runChange(() => {
+              if (
+                event.data.type === "@easyblocks-editor/form-change" &&
+                Array.isArray(event.data.payload.focussedField)
+              ) {
+                form.change(event.data.payload.key, event.data.payload.value);
+                return event.data.payload.focussedField;
+              }
+            });
+          } else {
+            form.change(event.data.payload.key, event.data.payload.value);
+          }
 
-            form.mutators.insert(insertionPath, insertionIndex, newConfig);
+          break;
+        }
 
-            actions.removeItems([fromPath]);
+        case "@easyblocks-editor/focus": {
+          handleSetFocussedField(event.data.payload.target);
+          break;
+        }
 
-            return [
+        case "@easyblocks-editor/change-responsive": {
+          setCurrentViewport(event.data.payload.device);
+          break;
+        }
+
+        case "@easyblocks-editor/undo": {
+          undo();
+          break;
+        }
+
+        case "@easyblocks-editor/redo": {
+          redo();
+          break;
+        }
+
+        case "@easyblocks-editor/component-picker-opened": {
+          actions
+            .openComponentPicker({ path: event.data.payload.path })
+            .then((config) => {
+              const shopstoryCanvasIframe = window.document.getElementById(
+                "shopstory-canvas"
+              ) as HTMLIFrameElement | undefined;
+
+              shopstoryCanvasIframe?.contentWindow?.postMessage(
+                componentPickerClosed(config),
+                "*"
+              );
+            });
+
+          break;
+        }
+
+        case "@easyblocks-editor/item-inserted": {
+          actions.insertItem(event.data.payload);
+          break;
+        }
+
+        case "@easyblocks-editor/item-moved": {
+          const { fromPath, toPath, placement } = event.data.payload;
+
+          const fromPathParseResult = parsePath(fromPath, editorContext.form);
+          const toPathParseResult = parsePath(toPath, editorContext.form);
+
+          if (
+            !fromPathParseResult.parent ||
+            !toPathParseResult.parent ||
+            fromPathParseResult.index === undefined ||
+            toPathParseResult === undefined
+          ) {
+            return;
+          }
+
+          if (
+            fromPathParseResult.parent.path === toPathParseResult.parent.path
+          ) {
+            const pathToMove = `${
+              fromPathParseResult.parent.path
+                ? fromPathParseResult.parent.path + "."
+                : ""
+            }${fromPathParseResult.parent.fieldName}`;
+
+            actions.runChange(() => {
+              form.mutators.move(
+                pathToMove,
+                fromPathParseResult.index,
+                toPathParseResult.index
+              );
+
+              return [toPath];
+            });
+          } else {
+            // TODO: We should reuse logic of pasting items here, but we need to handle the case of pasting into placeholder (empty array)
+            const isToPathPlaceholder =
+              toPathParseResult.fieldName !== undefined;
+
+            const insertionPath = `${
+              toPathParseResult.parent.path === ""
+                ? ""
+                : toPathParseResult.parent.path + "."
+            }${toPathParseResult.parent.fieldName}${
               isToPathPlaceholder
-                ? `${insertionPath}.0`
-                : `${insertionPath}.${insertionIndex}`,
-            ];
-          });
+                ? `.${toPathParseResult.index}.${toPathParseResult.fieldName}`
+                : ""
+            }`;
+
+            actions.runChange(() => {
+              const newConfig = duplicateConfig(
+                dotNotationGet(form.values, fromPath),
+                editorContext
+              );
+
+              const insertionIndex = calculateInsertionIndex(
+                fromPath,
+                toPath,
+                placement,
+                form
+              );
+
+              form.mutators.insert(insertionPath, insertionIndex, newConfig);
+
+              actions.removeItems([fromPath]);
+
+              return [
+                isToPathPlaceholder
+                  ? `${insertionPath}.0`
+                  : `${insertionPath}.${insertionIndex}`,
+              ];
+            });
+          }
+
+          break;
         }
+
+        default:
+          break;
       }
     }
 
     window.addEventListener("message", handleEditorEvents);
 
-    return () => window.removeEventListener("message", handleEditorEvents);
+    return () => {
+      window.removeEventListener("message", handleEditorEvents);
+    };
   }, [focussedField]);
 
   const shopstoryCanvasIframe = useRef<HTMLIFrameElement | null>(null);
