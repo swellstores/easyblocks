@@ -36,6 +36,7 @@ import {
   PasteItemsEvent,
   RedoEvent,
   RemoveItemsEvent,
+  DuplicateItemsEvent,
   SetFocussedFieldEvent,
   UndoEvent,
   componentPickerClosed,
@@ -90,7 +91,6 @@ import { useEditorGlobalKeyboardShortcuts } from "./useEditorGlobalKeyboardShort
 import { useEditorHistory } from "./useEditorHistory";
 import { checkLocalesCorrectness } from "./utils/locales/checkLocalesCorrectness";
 import { removeLocalizedFlag } from "./utils/locales/removeLocalizedFlag";
-import { ZodNullDef } from "zod";
 import { TemplatePicker } from "./TemplatePicker";
 
 const ContentContainer = styled.div`
@@ -921,6 +921,7 @@ const EditorContent = ({
         | FormChangeEvent
         | CanvasLoadedEvent
         | RemoveItemsEvent
+        | DuplicateItemsEvent
         | PasteItemsEvent
         | MoveItemsEvent
         | LogSelectedEvent
@@ -928,6 +929,11 @@ const EditorContent = ({
       switch (event.data.type) {
         case "@easyblocks-editor/remove-items": {
           actions.removeItems(event.data.payload.paths);
+          break;
+        }
+
+        case "@easyblocks-editor/duplicate-items": {
+          actions.duplicateItems(event.data.payload.paths);
           break;
         }
 

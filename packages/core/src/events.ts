@@ -156,6 +156,16 @@ type RemoveItemsEvent = MessageEvent<
   >
 >;
 
+type DuplicateItemsEvent = MessageEvent<
+  EasyblocksEditorEventData<
+    "@easyblocks-editor/duplicate-items",
+    {
+      type: "@easyblocks-editor/duplicate-items";
+      paths: Array<string>;
+    }
+  >
+>;
+
 type PasteItemsEvent = MessageEvent<
   EasyblocksEditorEventData<
     "@easyblocks-editor/paste-items",
@@ -248,6 +258,7 @@ export type {
   FormChangeEvent,
   CanvasLoadedEvent,
   RemoveItemsEvent,
+  DuplicateItemsEvent,
   PasteItemsEvent,
   MoveItemsEvent,
   LogSelectedEvent,
