@@ -758,6 +758,7 @@ export type CompiledComponentConfigBase<
 > = {
   _component: Identifier; // instance of the component (unique id)
   _id: string;
+  _disabled: boolean;
   props: Props;
 };
 

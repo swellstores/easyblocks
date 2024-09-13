@@ -37,6 +37,7 @@ import {
   RedoEvent,
   RemoveItemsEvent,
   DuplicateItemsEvent,
+  ToggleItemEvent,
   SetFocussedFieldEvent,
   UndoEvent,
   componentPickerClosed,
@@ -729,6 +730,13 @@ const EditorContent = ({
         return duplicateItems(form, fieldNames, compilationContext);
       });
     },
+    toggleItem: (path) => {
+      actions.runChange(() => {
+        const value = dotNotationGet(form.values, path);
+
+        form.change(path, { ...value, _disabled: !value._disabled });
+      });
+    },
     pasteItems: (what) => {
       actions.runChange(() =>
         pasteItems({
@@ -922,6 +930,7 @@ const EditorContent = ({
         | CanvasLoadedEvent
         | RemoveItemsEvent
         | DuplicateItemsEvent
+        | ToggleItemEvent
         | PasteItemsEvent
         | MoveItemsEvent
         | LogSelectedEvent
@@ -949,6 +958,11 @@ const EditorContent = ({
             event.data.payload.direction
           );
 
+          break;
+        }
+
+        case "@easyblocks-editor/toggle-item": {
+          actions.toggleItem(event.data.payload.path);
           break;
         }
 

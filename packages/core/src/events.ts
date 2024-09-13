@@ -166,6 +166,16 @@ type DuplicateItemsEvent = MessageEvent<
   >
 >;
 
+type ToggleItemEvent = MessageEvent<
+  EasyblocksEditorEventData<
+    "@easyblocks-editor/toggle-item",
+    {
+      type: "@easyblocks-editor/toggle-item";
+      path: string;
+    }
+  >
+>;
+
 type PasteItemsEvent = MessageEvent<
   EasyblocksEditorEventData<
     "@easyblocks-editor/paste-items",
@@ -259,6 +269,7 @@ export type {
   CanvasLoadedEvent,
   RemoveItemsEvent,
   DuplicateItemsEvent,
+  ToggleItemEvent,
   PasteItemsEvent,
   MoveItemsEvent,
   LogSelectedEvent,

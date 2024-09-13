@@ -159,6 +159,7 @@ export function compileComponent(
   let compiled: CompiledComponentConfig = {
     _component: editableElement._component,
     _id: editableElement._id,
+    _disabled: editableElement._disabled,
     props: {},
     components: {},
     styled: {},
@@ -783,6 +784,7 @@ function createOwnComponentProps({
           return {
             _id: config._id,
             _component: config._component,
+            _disabled: config._disabled,
           };
         });
 
@@ -793,10 +795,16 @@ function createOwnComponentProps({
     })
   );
 
-  const ownValues: { _id: string; _component: string; [key: string]: any } = {
+  const ownValues: {
+    _id: string;
+    _component: string;
+    _disabled: boolean;
+    [key: string]: any;
+  } = {
     // Copy id and component which uniquely identify component.
     _id: config._id,
     _component: config._component,
+    _disabled: config._disabled,
     ...values,
   };
 

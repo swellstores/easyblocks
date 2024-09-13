@@ -314,6 +314,10 @@ export type InternalNoCodeComponentProps = NoCodeComponentProps & {
 function ComponentBuilder(props: ComponentBuilderProps): ReactElement | null {
   const { compiled, passedProps, path, components, ...restProps } = props;
 
+  if (compiled._disabled) {
+    return <Fragment key={compiled._id} />;
+  }
+
   const allPassedProps: Record<string, any> = {
     ...passedProps,
     ...restProps,
