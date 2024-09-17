@@ -9,6 +9,7 @@ export type TemplatesDictionary = {
 
 type TemplatePickerProps = {
   isOpen: boolean;
+  path: string;
   templates?: TemplatesDictionary;
   onClose: (template?: Template) => void;
   mode?: string;
