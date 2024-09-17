@@ -67,6 +67,7 @@ export type ActionsType = {
   insertItem: (insertItemProps: InsertItemActionType) => void;
   duplicateItems: (fieldNames: Array<string>) => void;
   pasteItems: (items: Array<NoCodeComponentEntry>) => void;
+  toggleItem: (path: string) => void;
   runChange: <Callback extends () => Array<string> | void>(
     configChangeCallback: Callback
   ) => void;
