@@ -11,8 +11,9 @@ import {
   TooltipProvider,
 } from "@easyblocks/design-system";
 import isPropValid from "@emotion/is-prop-valid";
-import React, { ComponentType } from "react";
+import React, { ComponentType, useMemo, memo } from "react";
 import { ShouldForwardProp, StyleSheetManager } from "styled-components";
+
 import { Editor } from "./Editor";
 import { ColorTokenWidget } from "./sidebar/ColorTokenWidget";
 import { GlobalStyles } from "./tinacms/styles";
@@ -24,7 +25,7 @@ import { TemplatePicker } from "./TemplatePicker";
 import { SectionPickerModal } from "./SectionPicker";
 import { SearchableSmallPickerModal } from "./SearchableSmallPickerModal";
 
-type EasyblocksParentProps = {
+interface EasyblocksParentProps {
   config: Config;
   externalData: FetchOutputResources;
   onExternalDataChange: ExternalDataChangeHandler;
@@ -41,7 +42,7 @@ type EasyblocksParentProps = {
   rootTemplate?: string;
   readOnly?: boolean;
   pickers?: Record<string, TemplatePicker>;
-};
+}
 
 const shouldForwardProp: ShouldForwardProp<"web"> = (propName, target) => {
   if (typeof target === "string") {
@@ -64,26 +65,51 @@ const builinPickers: EasyblocksParentProps["pickers"] = {
   "large-3": SectionPickerModal,
 };
 
-export function EasyblocksParent(props: EasyblocksParentProps) {
-  const editorSearchParams = parseQueryParams();
+function getModalContainer() {
+  return document.querySelector("#modalContainer");
+}
+
+const modalStyle = {
+  position: "fixed",
+  left: 0,
+  top: 0,
+  zIndex: 100000,
+} as const;
+const toasterStyle = { zIndex: 100100 };
+
+export const EasyblocksParent = memo<EasyblocksParentProps>((props) => {
+  const editorSearchParams = useMemo(
+    () => parseQueryParams(window.location.search),
+    [window.location.search]
+  );
+
+  const widgets = useMemo(() => {
+    return {
+      ...builtinWidgets,
+      ...props.widgets,
+    };
+  }, [props.widgets]);
+
+  const pickers = useMemo(() => {
+    return {
+      ...builinPickers,
+      ...props.pickers,
+    };
+  }, [props.pickers]);
 
   return (
     <StyleSheetManager
       shouldForwardProp={shouldForwardProp}
       enableVendorPrefixes
     >
-      <ModalContext.Provider
-        value={() => {
-          return document.querySelector("#modalContainer");
-        }}
-      >
+      <ModalContext.Provider value={getModalContainer}>
         <GlobalStyles />
+
         <GlobalModalStyles />
+
         <TooltipProvider>
-          <div
-            id={"modalContainer"}
-            style={{ position: "fixed", left: 0, top: 0, zIndex: 100000 }}
-          />
+          <div id="modalContainer" style={modalStyle} />
+
           <Editor
             config={props.config}
             locale={props.locale || editorSearchParams.locale || undefined}
@@ -97,20 +123,15 @@ export function EasyblocksParent(props: EasyblocksParentProps) {
             }
             externalData={props.externalData}
             onExternalDataChange={props.onExternalDataChange}
-            widgets={{
-              ...builtinWidgets,
-              ...props.widgets,
-            }}
+            widgets={widgets}
             components={props.components}
             canvasURL={props.canvasURL}
-            pickers={{
-              ...builinPickers,
-              ...props.pickers,
-            }}
+            pickers={pickers}
           />
         </TooltipProvider>
-        <Toaster containerStyle={{ zIndex: 100100 }} />
+
+        <Toaster containerStyle={toasterStyle} />
       </ModalContext.Provider>
     </StyleSheetManager>
   );
-}
+});

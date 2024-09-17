@@ -29,6 +29,7 @@ import {
   CompilationContextType,
   ComponentPickerOpenedEvent,
   FormChangeEvent,
+  InternalComponentDefinition,
   ItemInsertedEvent,
   ItemMovedEvent,
   LogSelectedEvent,
@@ -53,10 +54,12 @@ import React, {
   useCallback,
   useEffect,
   useRef,
+  useMemo,
   useState,
 } from "react";
 import Modal from "react-modal";
 import styled from "styled-components";
+
 import { ConfigAfterAutoContext } from "./ConfigAfterAutoContext";
 import { ExternalDataChangeHandler } from "./EasyblocksEditorProps";
 import { EditorContext, EditorContextType } from "./EditorContext";
@@ -87,10 +90,9 @@ import {
 } from "./types";
 import { useDataSaver } from "./useDataSaver";
 import { useEditorGlobalKeyboardShortcuts } from "./useEditorGlobalKeyboardShortcuts";
-import { useEditorHistory } from "./useEditorHistory";
+import { useEditorHistory, EditorHistoryChange } from "./useEditorHistory";
 import { checkLocalesCorrectness } from "./utils/locales/checkLocalesCorrectness";
 import { removeLocalizedFlag } from "./utils/locales/removeLocalizedFlag";
-import { ZodNullDef } from "zod";
 import { TemplatePicker } from "./TemplatePicker";
 
 const ContentContainer = styled.div`
@@ -165,7 +167,9 @@ const AuthenticationScreen = styled.div`
   ${Fonts.bodyLarge}
 `;
 
-type EditorProps = {
+const noop = () => {};
+
+interface EditorProps {
   config: Config;
   locale?: string;
   readOnly: boolean;
@@ -185,9 +189,9 @@ type EditorProps = {
   components?: Record<string, ComponentType<any>>;
   canvasURL?: string;
   pickers?: Record<string, TemplatePicker>;
-};
+}
 
-export const Editor = EditorBackendInitializer;
+export const Editor = memo(EditorBackendInitializer);
 
 function EditorBackendInitializer(props: EditorProps) {
   const [enabled, setEnabled] = useState<boolean>(false);
@@ -224,7 +228,7 @@ function EditorBackendInitializer(props: EditorProps) {
     }
 
     run();
-  }, [props.documentId]);
+  }, [props.documentId, props.config.backend.documents]);
 
   if (!enabled) {
     return <AuthenticationScreen>Loading...</AuthenticationScreen>;
@@ -233,7 +237,7 @@ function EditorBackendInitializer(props: EditorProps) {
   if (error) {
     return (
       <DataSaverRoot>
-        <DataSaverOverlay></DataSaverOverlay>
+        <DataSaverOverlay />
         <DataSaverModal>{error}</DataSaverModal>
       </DataSaverRoot>
     );
@@ -285,35 +289,47 @@ const EditorWrapper = memo(
       throw new Error("Required property Config.locales is empty");
     }
 
-    checkLocalesCorrectness(props.config.locales); // very important to check locales correctness, circular references etc. Other functions
-    const locale = props.locale ?? getDefaultLocale(props.config.locales).code;
+    const locale = useMemo(() => {
+      // very important to check locales correctness, circular references etc. Other functions
+      checkLocalesCorrectness(props.config.locales);
+      return props.locale ?? getDefaultLocale(props.config.locales).code;
+    }, [props.locale, props.config.locales]);
 
-    const rootTemplateEntry = props.rootTemplateId
-      ? props.config.templates?.find((t) => t.id === props.rootTemplateId)
-          ?.entry
-      : null;
+    const rootTemplateEntry = useMemo(() => {
+      return props.rootTemplateId
+        ? props.config.templates?.find((t) => t.id === props.rootTemplateId)
+            ?.entry
+        : null;
+    }, [props.rootTemplateId, props.config.templates]);
 
     const rootComponentId = props.document
       ? props.document.entry._component
       : rootTemplateEntry?._component ?? props.rootComponentId;
 
-    const compilationContext = createCompilationContext(
-      props.config,
-      {
-        locale,
-      },
-      rootComponentId!
-    );
+    const compilationContext = useMemo(() => {
+      return createCompilationContext(
+        props.config,
+        { locale },
+        rootComponentId as string
+      );
+    }, [locale, props.config, rootComponentId]);
 
-    const initialEntry = props.document
-      ? adaptRemoteConfig(props.document.entry, compilationContext)
-      : normalize(
-          rootTemplateEntry ?? {
-            _id: uniqueId(),
-            _component: rootComponentId!,
-          },
-          compilationContext
-        );
+    const initialEntry = useMemo(() => {
+      return props.document
+        ? adaptRemoteConfig(props.document.entry, compilationContext)
+        : normalize(
+            rootTemplateEntry ?? {
+              _id: uniqueId(),
+              _component: rootComponentId as string,
+            },
+            compilationContext
+          );
+    }, [
+      compilationContext,
+      props.document,
+      rootComponentId,
+      rootTemplateEntry,
+    ]);
 
     return (
       <EditorContent
@@ -326,12 +342,12 @@ const EditorWrapper = memo(
   }
 );
 
-type EditorContentProps = EditorProps & {
+interface EditorContentProps extends EditorProps {
   compilationContext: CompilationContextType;
   initialDocument: Document | null;
   initialEntry: NoCodeComponentEntry;
   heightMode?: "viewport" | "full";
-};
+}
 
 function parseExternalDataId(externalDataId: string): {
   configId: string;
@@ -356,19 +372,7 @@ function useBuiltContent(
 ): NonEmptyRenderableContent & {
   meta: CompilationMetadata;
 } {
-  const buildEntryResult = useRef<ReturnType<typeof buildEntry>>();
-
-  // cached inputs (needed to calculated "inputChanged")
-  const inputRawContent = useRef<NoCodeComponentEntry>();
-  const inputIsEditing = useRef<boolean>();
-  const inputBreakpointIndex = useRef<string>();
-
-  const inputChanged =
-    inputRawContent.current !== rawContent ||
-    inputIsEditing.current !== editorContext.isEditing ||
-    inputBreakpointIndex.current !== editorContext.breakpointIndex;
-
-  if (!buildEntryResult.current || inputChanged) {
+  const buildEntryResult = useMemo<ReturnType<typeof buildEntry>>(() => {
     /*
      * Why do we merge meta instead of overriding?
      * It might seem redundant. We could only take the newest meta and re-render, right?
@@ -389,8 +393,7 @@ function useBuiltContent(
      * that were added at any point will be available later.
      *
      */
-
-    buildEntryResult.current = buildEntry({
+    return buildEntry({
       entry: rawContent,
       config,
       locale: editorContext.contextParams.locale,
@@ -440,19 +443,15 @@ function useBuiltContent(
 
         // If external data for given is is already stored, but now the external id is different it means that the user
         // has changed the selected external value and thus the user of editor has to update it in its external data.
-        if (
-          storedExternalData &&
-          externalDataValue.externalId &&
-          inputRawContent.current
-        ) {
+        if (storedExternalData && externalDataValue.externalId && rawContent) {
           const { breakpointIndex, configId, fieldName } = parseExternalDataId(
             externalDataValue.id
           );
 
           const config = findConfigById(
-            inputRawContent.current,
+            rawContent,
             editorContext,
-            configId === "$" ? inputRawContent.current._id : configId
+            configId === "$" ? rawContent._id : configId
           );
 
           if (!config) {
@@ -472,42 +471,43 @@ function useBuiltContent(
         return defaultIsExternalDataChanged(externalDataValue);
       },
     });
+  }, [config, editorContext, externalData, rawContent]);
 
-    if (Object.keys(buildEntryResult.current.externalData).length > 0) {
+  useEffect(() => {
+    if (Object.keys(buildEntryResult.externalData).length > 0) {
       onExternalDataChange(
-        buildEntryResult.current.externalData,
+        buildEntryResult.externalData,
         editorContext.contextParams
       );
     }
-  }
+  }, [
+    buildEntryResult.externalData,
+    editorContext.contextParams,
+    onExternalDataChange,
+  ]);
 
-  inputRawContent.current = rawContent;
-  inputIsEditing.current = editorContext.isEditing;
-  inputBreakpointIndex.current = editorContext.breakpointIndex;
+  return buildEntryResult;
+}
 
-  return {
-    renderableContent: (buildEntryResult.current as NonEmptyRenderableContent)
-      .renderableContent,
-    configAfterAuto: (buildEntryResult.current as NonEmptyRenderableContent)
-      .configAfterAuto,
-    meta: buildEntryResult.current.meta,
-  };
+interface ViewportValue {
+  value: string;
+  options: Record<string, string>;
 }
 
 function calculateViewportRelatedStuff(
-  viewport: string,
+  viewport: ViewportValue,
   devices: DeviceRange[],
   mainBreakpointIndex: string,
   availableSize?: { width: number; height: number }
 ) {
-  let activeDevice: DeviceRange;
+  let activeDevice: DeviceRange | undefined;
 
   // Calculate active device
-  if (viewport === "fit-screen") {
+  if (viewport.value === "fit-screen") {
     if (!availableSize) {
       activeDevice = devices.find(
         (device) => device.id === mainBreakpointIndex
-      )!;
+      );
     } else {
       const matchingDevice = getMatchingDevice(devices, availableSize.width);
       if (!matchingDevice) {
@@ -517,15 +517,19 @@ function calculateViewportRelatedStuff(
       activeDevice = matchingDevice;
     }
   } else {
-    activeDevice = devices.find((device) => device.id === viewport)!;
+    activeDevice = devices.find((device) => device.id === viewport.value);
   }
 
-  const activeDeviceindex = devices.findIndex(
+  if (activeDevice === undefined) {
+    throw new Error("can't find active device");
+  }
+
+  const activeDeviceIndex = devices.findIndex(
     (device) => device.id === activeDevice.id
   );
 
   // Calculate width, height and scale
-  let width, height: number;
+  let width: number, height: number;
   let scaleFactor: number | null = null;
   let offsetY = 0;
 
@@ -534,14 +538,14 @@ function calculateViewportRelatedStuff(
     width = 0;
     height = 0;
   } else {
-    if (viewport === "fit-screen") {
+    if (viewport.value === "fit-screen") {
       width = availableSize.width;
       height = availableSize.height;
     } else {
       const smallestNonScaledWidth =
-        activeDeviceindex === 0
+        activeDeviceIndex === 0
           ? 0
-          : devices[activeDeviceindex - 1].breakpoint!;
+          : devices[activeDeviceIndex - 1].breakpoint ?? 0;
 
       width = activeDevice.w;
       height =
@@ -564,11 +568,24 @@ function calculateViewportRelatedStuff(
         }
       }
     }
+
+    if (viewport.options.height === "max") {
+      height = availableSize.height;
+    }
+
+    if (viewport.options.margin && width < availableSize.width) {
+      const margin = Number(viewport.options.margin);
+
+      if (Number.isFinite(margin)) {
+        height -= margin * 2;
+      }
+    }
   }
 
   return {
     breakpointIndex: activeDevice.id,
     iframeSize: {
+      fullWidth: width >= (availableSize?.width ?? 0),
       width,
       height,
       transform:
@@ -582,675 +599,790 @@ function calculateViewportRelatedStuff(
 function useRerenderOnIframeResize(iframe?: HTMLIFrameElement | null) {
   const { forceRerender } = useForceRerender();
 
-  const resizeObserver = useRef(
-    new ResizeObserver(
-      throttle(() => {
-        forceRerender();
-      }, 100)
-    )
+  const resizeObserver = useMemo(
+    () =>
+      new ResizeObserver(
+        throttle(() => {
+          forceRerender();
+        }, 100)
+      ),
+    [forceRerender]
   );
 
   useEffect(() => {
     if (!iframe) {
-      return;
+      return () => {};
     }
 
-    resizeObserver.current.observe(iframe);
+    resizeObserver.observe(iframe);
 
     return () => {
-      resizeObserver.current.unobserve(iframe);
+      resizeObserver.unobserve(iframe);
     };
-  }, [iframe]);
+  }, [iframe, resizeObserver]);
 }
 
-const EditorContent = ({
-  compilationContext,
-  heightMode = "viewport",
-  initialDocument,
-  initialEntry,
-  externalData,
-  ...props
-}: EditorContentProps) => {
-  const [currentViewport, setCurrentViewport] = useState<string>(
-    compilationContext.mainBreakpointIndex
-  ); // "{ breakpoint }" or "fit-screen"
-
-  const iframeContainerRef = useRef<HTMLIFrameElement>(null);
-  const availableSize = iframeContainerRef.current
-    ? {
-        width: iframeContainerRef.current.clientWidth,
-        height: iframeContainerRef.current.clientHeight,
+const EditorContent = memo(
+  ({
+    compilationContext,
+    heightMode = "viewport",
+    initialDocument,
+    initialEntry,
+    externalData,
+    ...props
+  }: EditorContentProps) => {
+    const [currentViewport, setCurrentViewport] = useState<ViewportValue>(
+      () => {
+        return {
+          value: compilationContext.mainBreakpointIndex,
+          options: {},
+        };
       }
-    : undefined;
+    ); // "{ breakpoint }" or "fit-screen"
 
-  const { breakpointIndex, iframeSize } = calculateViewportRelatedStuff(
-    currentViewport,
-    compilationContext.devices,
-    compilationContext.mainBreakpointIndex,
-    availableSize
-  );
+    const onViewportChange = useCallback((viewport: string) => {
+      const [value, options = ""] = viewport.split(":");
 
-  useRerenderOnIframeResize(iframeContainerRef.current); // re-render on resize (recalculates viewport size, active breakpoint for fit-screen etc);
+      setCurrentViewport({
+        value,
+        options: options
+          .split(",")
+          .reduce((acc: Record<string, string>, option) => {
+            const [key, value] = option.split("=");
+            acc[key] = value;
+            return acc;
+          }, {}),
+      });
+    }, []);
 
-  const compilationCache = useRef(new CompilationCache());
-  const [isEditing, setEditing] = useState(true);
-  const [componentPickerData, setComponentPickerData] = useState<
-    | {
-        promiseResolve: (config: NoCodeComponentEntry | undefined) => void;
-        config: OpenComponentPickerConfig;
-      }
-    | undefined
-  >(undefined);
-  const [focussedField, setFocussedField] = useState<Array<string>>([]);
+    const iframeContainerRef = useRef<HTMLIFrameElement>(null);
 
-  const handleSetFocussedField = React.useRef(
-    (field: Array<string> | string) => {
+    const availableWidth = iframeContainerRef.current?.clientWidth;
+    const availableHeight = iframeContainerRef.current?.clientHeight;
+
+    const { breakpointIndex, iframeSize } = useMemo(() => {
+      const availableSize =
+        typeof availableWidth === "number" &&
+        typeof availableHeight === "number"
+          ? { width: availableWidth, height: availableHeight }
+          : undefined;
+
+      return calculateViewportRelatedStuff(
+        currentViewport,
+        compilationContext.devices,
+        compilationContext.mainBreakpointIndex,
+        availableSize
+      );
+    }, [
+      currentViewport,
+      availableWidth,
+      availableHeight,
+      compilationContext.mainBreakpointIndex,
+      compilationContext.devices,
+    ]);
+
+    // re-render on resize (recalculates viewport size, active breakpoint for fit-screen etc);
+    useRerenderOnIframeResize(iframeContainerRef.current);
+
+    const compilationCache = useMemo(() => new CompilationCache(), []);
+    const [isEditing, setEditing] = useState(true);
+
+    const [componentPickerData, setComponentPickerData] = useState<
+      | {
+          promiseResolve: (config: NoCodeComponentEntry | undefined) => void;
+          config: OpenComponentPickerConfig;
+        }
+      | undefined
+    >(undefined);
+
+    const [focussedField, setFocussedField] = useState<string[]>([]);
+
+    const handleSetFocussedField = useCallback((field: string[] | string) => {
       const nextFocusedField = Array.isArray(field) ? field : [field];
       setFocussedField(nextFocusedField);
-    }
-  ).current;
+    }, []);
 
-  const handleSetEditing = useCallback(() => {
-    compilationCache.current.clear();
-    setEditing(!isEditing);
-  }, [isEditing]);
+    const onFocussedFieldClear = useCallback(() => {
+      setFocussedField([]);
+    }, []);
 
-  const closeComponentPickerModal = (config?: NoCodeComponentEntry) => {
-    setComponentPickerData(undefined);
-    componentPickerData!.promiseResolve(config);
-  };
+    const handleSetEditing = useCallback(() => {
+      compilationCache.clear();
+      setEditing((isEditing) => !isEditing);
+    }, [compilationCache]);
 
-  const sidebarNodeRef = useRef<HTMLDivElement | null>(null);
-
-  const [editableData, form] = useForm({
-    id: `easyblocks-editor-${initialEntry._id}`,
-    label: "Edit entry",
-    fields: [],
-    initialValues: initialEntry,
-    onSubmit: async () => {},
-  });
-
-  const { undo, redo, push } = useEditorHistory({
-    onChange: ({ config, focusedField }) => {
-      setFocussedField(focusedField);
-      form.finalForm.change("", config);
-    },
-  });
-
-  const [templates, setTemplates] = useState<Template[] | undefined>(undefined);
-
-  const [openTemplateModalAction, setOpenTemplateModalAction] = useState<
-    OpenTemplateModalAction | undefined
-  >(undefined);
-
-  const { notify } = useToaster();
-
-  const actions: ActionsType = {
-    openTemplateModal: setOpenTemplateModalAction,
-    notify: (message) => {
-      notify(message);
-    },
-    openComponentPicker: function (config) {
-      return new Promise((resolve) => {
-        setComponentPickerData({
-          promiseResolve: resolve,
-          config,
-        });
-      });
-    },
-    replaceItems: (paths, newConfig) => {
-      actions.runChange(() => {
-        replaceItems(paths, newConfig, editorContext);
-      });
-    },
-    moveItems: (fieldNames, direction) => {
-      actions.runChange(() => {
-        return moveItems(form, fieldNames, direction);
-      });
-    },
-    removeItems: (fieldNames) => {
-      actions.runChange(() => {
-        return removeItems(form, fieldNames, editorContext);
-      });
-    },
-    insertItem: ({ name, index, block }) => {
-      actions.runChange(() => {
-        form.mutators.insert(
-          name,
-          index,
-          duplicateConfig(block, compilationContext)
-        );
-
-        return [`${name}.${index}`];
-      });
-    },
-    duplicateItems: (fieldNames) => {
-      actions.runChange(() => {
-        return duplicateItems(form, fieldNames, compilationContext);
-      });
-    },
-    pasteItems: (what) => {
-      actions.runChange(() =>
-        pasteItems({
-          what,
-          where: focussedField,
-          resolveDestination: destinationResolver({
-            form,
-            context: compilationContext,
-          }),
-          pasteCommand: pasteManager(),
-        })
-      );
-    },
-    runChange: (configChangeCallback) => {
-      let fieldsToFocus!: Array<string>;
-
-      // When multiple fields are selected, the update could probably invoke `form.change` multiple times.
-      // To avoid multiple rerenders, we batch them to trigger single update.
-      form.finalForm.batch(() => {
-        // This shallow copy of `focussedField` array is SUPER IMPORTANT!
-        // Here is why...
-        //
-        // We invoke `configChangeCallback`, but since we are in batch, changes made to form state won't notify
-        // any listeners that there were any changes. This means `window.editorWindowAPI.onUpdate` won't be invoked.
-        //
-        // Next, update of `focussedField` is going to be queued up. React's heuristics will treat this update
-        // as update with high priority and synchronously rerender. `EditorContent` is going to rerender with updated
-        // `focussedField` state, but also with updated `editableData` because it's a result of **getter**!
-        // `useEffect` that is responsible for invoking `window.editorWindowAPI.onUpdate` will receive new dependencies,
-        // save them as the the latest, but it won't be immediately invoked after component have returned.
-        // Then the batch ends and all form listeners are going to be notified. `EditorContent` will rerender again,
-        // but `editableData` and `focussedField` are the same! `useEffect` will be invoked again, it will compare its dependencies
-        // and finds that the haven't changed.
-        //
-        // Making a shallow copy of `focussedField` will make the second invocation of `useEffect` different from the first
-        // triggered by calling `setFocussedField`.
-        fieldsToFocus = configChangeCallback() ?? [...focussedField];
-
-        push({
-          config: form.values,
-          focussedField: fieldsToFocus,
-        });
-
-        setFocussedField(fieldsToFocus);
-
-        /* Send content change event to canvas to notify it about the change */
-        shopstoryCanvasIframe?.current?.contentWindow?.postMessage(
-          "@easyblocks/content-changed",
-          "*"
-        );
-      });
-    },
-    logSelectedItems: () => {
-      logItems(editorContext.form, focussedField);
-    },
-  };
-
-  const [isAdminMode, setAdminMode] = useState(false);
-
-  const syncTemplates = () => {
-    getTemplates(editorContext, (props.config.templates as any) ?? []).then(
-      (newTemplates) => {
-        setTemplates(newTemplates);
-      }
+    const closeComponentPickerModal = useCallback(
+      (config?: NoCodeComponentEntry) => {
+        setComponentPickerData(undefined);
+        componentPickerData?.promiseResolve(config);
+      },
+      [componentPickerData]
     );
-  };
 
-  useEffect(() => {
-    syncTemplates();
-  }, [props.config.components, props.config.templates]);
+    const sidebarNodeRef = useRef<HTMLDivElement | null>(null);
 
-  const editorTypes: EditorContextType["types"] = Object.fromEntries(
-    Object.entries(compilationContext.types).map(
-      ([typeName, typeDefinition]) => {
-        return [
-          typeName,
-          {
-            ...typeDefinition,
-            ...(typeDefinition.type === "external"
-              ? {
-                  widgets: typeDefinition.widgets.map((w) => {
-                    return {
-                      ...w,
-                      component: props.widgets?.[w.id] as any,
-                    };
-                  }),
-                }
-              : typeDefinition.widget
-              ? {
-                  widget: {
-                    ...typeDefinition.widget,
-                    component: props.widgets?.[typeDefinition.widget.id] as any,
-                  },
-                }
-              : {}),
-          },
-        ];
-      }
-    )
-  );
-
-  const editorContext: EditorContextType = {
-    ...compilationContext,
-    backend: props.config.backend,
-    types: editorTypes,
-    isAdminMode,
-    templates,
-    syncTemplates,
-    breakpointIndex,
-    focussedField,
-    form,
-    setFocussedField: handleSetFocussedField,
-    isEditing,
-    actions,
-    save: async (documentData) => {
-      window.postMessage({
-        type: "@easyblocks/content-saved",
-        document: documentData,
-      });
-    },
-    compilationCache: compilationCache.current,
-    readOnly: props.readOnly,
-    disableCustomTemplates: props.config.disableCustomTemplates ?? false,
-    rootComponent: findComponentDefinitionById(
-      initialEntry._component,
-      compilationContext
-    )!,
-    components: props.components ?? {},
-  };
-
-  const { configAfterAuto, renderableContent, meta } = useBuiltContent(
-    editorContext,
-    props.config,
-    editableData,
-    externalData,
-    props.onExternalDataChange
-  );
-
-  editorContext.compiledComponentConfig = renderableContent;
-  editorContext.configAfterAuto = configAfterAuto;
-
-  console.debug("editable data", editableData);
-  console.debug("focused field", focussedField);
-  console.debug("meta", meta);
-  console.debug("compiled config", {
-    configAfterAuto,
-    renderableContent,
-  });
-  console.debug("external data", externalData);
-
-  window.editorWindowAPI = window.editorWindowAPI || {};
-  window.editorWindowAPI.editorContext = editorContext;
-  window.editorWindowAPI.meta = meta;
-  window.editorWindowAPI.compiled = renderableContent;
-  window.editorWindowAPI.externalData = externalData;
-
-  useEffect(() => {
-    push({
-      config: initialEntry,
-      focussedField: [],
+    const [editableData, form] = useForm({
+      id: `easyblocks-editor-${initialEntry._id}`,
+      label: "Edit entry",
+      fields: [],
+      initialValues: initialEntry,
+      onSubmit: async () => {},
     });
-  }, []);
 
-  const [canvasLoaded, setCanvasLoaded] = useState(false);
+    const onHistoryChange = useCallback(
+      ({ config, focusedField }: EditorHistoryChange) => {
+        setFocussedField(focusedField);
+        form.finalForm.change("", config);
+      },
+      [form]
+    );
 
-  useEffect(() => {
-    sendCanvasData();
-    if (window.editorWindowAPI.onUpdate) {
-      window.editorWindowAPI.onUpdate();
-    }
-  }, [
-    renderableContent,
-    focussedField,
-    isEditing,
-    currentViewport,
-    externalData,
-    canvasLoaded,
-  ]);
+    const { undo, redo, push } = useEditorHistory({
+      onChange: onHistoryChange,
+    });
 
-  useEffect(() => {
-    function handleEditorEvents(
-      event:
-        | ComponentPickerOpenedEvent
-        | ItemInsertedEvent
-        | ItemMovedEvent
-        | ChangeResponsiveEvent
-        | SetFocussedFieldEvent
-        | UndoEvent
-        | RedoEvent
-        | FormChangeEvent
-        | CanvasLoadedEvent
-        | RemoveItemsEvent
-        | PasteItemsEvent
-        | MoveItemsEvent
-        | LogSelectedEvent
-    ) {
-      switch (event.data.type) {
-        case "@easyblocks-editor/remove-items": {
-          actions.removeItems(event.data.payload.paths);
-          break;
+    const [templates, setTemplates] = useState<Template[] | undefined>(
+      undefined
+    );
+
+    const [openTemplateModalAction, setOpenTemplateModalAction] = useState<
+      OpenTemplateModalAction | undefined
+    >(undefined);
+
+    const editorContextRef = useRef<EditorContextType | undefined>(undefined);
+
+    const { notify } = useToaster();
+
+    const actions: ActionsType = useMemo<ActionsType>(
+      () => ({
+        openTemplateModal: setOpenTemplateModalAction,
+        notify: (message) => {
+          notify(message);
+        },
+        openComponentPicker: function (config) {
+          return new Promise((resolve) => {
+            setComponentPickerData({
+              promiseResolve: resolve,
+              config,
+            });
+          });
+        },
+        replaceItems: (paths, newConfig) => {
+          actions.runChange(() => {
+            if (editorContextRef.current) {
+              replaceItems(paths, newConfig, editorContextRef.current);
+            }
+          });
+        },
+        moveItems: (fieldNames, direction) => {
+          actions.runChange(() => {
+            return moveItems(form, fieldNames, direction);
+          });
+        },
+        removeItems: (fieldNames) => {
+          actions.runChange(() => {
+            if (editorContextRef.current) {
+              removeItems(form, fieldNames, editorContextRef.current);
+            }
+          });
+        },
+        insertItem: ({ name, index, block }) => {
+          actions.runChange(() => {
+            form.mutators.insert(
+              name,
+              index,
+              duplicateConfig(block, compilationContext)
+            );
+
+            return [`${name}.${index}`];
+          });
+        },
+        duplicateItems: (fieldNames) => {
+          actions.runChange(() => {
+            return duplicateItems(form, fieldNames, compilationContext);
+          });
+        },
+        pasteItems: (what) => {
+          actions.runChange(() => {
+            setFocussedField((focussedField) => {
+              pasteItems({
+                what,
+                where: focussedField,
+                resolveDestination: destinationResolver({
+                  form,
+                  context: compilationContext,
+                }),
+                pasteCommand: pasteManager(),
+              });
+
+              return focussedField;
+            });
+          });
+        },
+        runChange: (configChangeCallback) => {
+          // When multiple fields are selected, the update could probably invoke `form.change` multiple times.
+          // To avoid multiple rerenders, we batch them to trigger single update.
+          form.finalForm.batch(() => {
+            // This shallow copy of `focussedField` array is SUPER IMPORTANT!
+            // Here is why...
+            //
+            // We invoke `configChangeCallback`, but since we are in batch, changes made to form state won't notify
+            // any listeners that there were any changes. This means `window.editorWindowAPI.onUpdate` won't be invoked.
+            //
+            // Next, update of `focussedField` is going to be queued up. React's heuristics will treat this update
+            // as update with high priority and synchronously rerender. `EditorContent` is going to rerender with updated
+            // `focussedField` state, but also with updated `editableData` because it's a result of **getter**!
+            // `useEffect` that is responsible for invoking `window.editorWindowAPI.onUpdate` will receive new dependencies,
+            // save them as the the latest, but it won't be immediately invoked after component have returned.
+            // Then the batch ends and all form listeners are going to be notified. `EditorContent` will rerender again,
+            // but `editableData` and `focussedField` are the same! `useEffect` will be invoked again, it will compare its dependencies
+            // and finds that the haven't changed.
+            //
+            // Making a shallow copy of `focussedField` will make the second invocation of `useEffect` different from the first
+            // triggered by calling `setFocussedField`.
+            setFocussedField((focussedField) => {
+              const fieldsToFocus = configChangeCallback() ?? [
+                ...focussedField,
+              ];
+
+              push({
+                config: form.values,
+                focussedField: fieldsToFocus,
+              });
+
+              return fieldsToFocus;
+            });
+
+            /* Send content change event to canvas to notify it about the change */
+            shopstoryCanvasIframe.current?.contentWindow?.postMessage(
+              "@easyblocks/content-changed",
+              "*"
+            );
+          });
+        },
+        logSelectedItems: () => {
+          setFocussedField((focussedField) => {
+            if (editorContextRef.current) {
+              logItems(editorContextRef.current.form, focussedField);
+            }
+
+            return focussedField;
+          });
+        },
+      }),
+      [compilationContext, form, notify, push]
+    );
+
+    const [isAdminMode, setAdminMode] = useState(false);
+
+    const onAdminModeChange = useCallback((adminMode: boolean) => {
+      setAdminMode(adminMode);
+    }, []);
+
+    const syncTemplates = useCallback(() => {
+      getTemplates(
+        editorContextRef.current as EditorContextType,
+        (props.config.templates as any[]) ?? []
+      ).then((newTemplates) => {
+        setTemplates(newTemplates);
+      });
+    }, [props.config.templates]);
+
+    useEffect(() => {
+      syncTemplates();
+    }, [syncTemplates]);
+
+    const editorContext = useMemo<EditorContextType>(() => {
+      const editorTypes: EditorContextType["types"] = Object.fromEntries(
+        Object.entries(compilationContext.types).map(
+          ([typeName, typeDefinition]) => {
+            return [
+              typeName,
+              {
+                ...typeDefinition,
+                ...(typeDefinition.type === "external"
+                  ? {
+                      widgets: typeDefinition.widgets.map((w) => {
+                        return {
+                          ...w,
+                          component: props.widgets?.[w.id] as any,
+                        };
+                      }),
+                    }
+                  : typeDefinition.widget
+                  ? {
+                      widget: {
+                        ...typeDefinition.widget,
+                        component: props.widgets?.[
+                          typeDefinition.widget.id
+                        ] as any,
+                      },
+                    }
+                  : undefined),
+              },
+            ];
+          }
+        )
+      );
+
+      const editorContext: EditorContextType = {
+        ...compilationContext,
+        backend: props.config.backend,
+        types: editorTypes,
+        isAdminMode,
+        templates,
+        syncTemplates,
+        breakpointIndex,
+        focussedField,
+        form,
+        setFocussedField: handleSetFocussedField,
+        isEditing,
+        actions,
+        save: async (documentData) => {
+          window.postMessage({
+            type: "@easyblocks/content-saved",
+            document: documentData,
+          });
+        },
+        compilationCache: compilationCache,
+        readOnly: props.readOnly,
+        disableCustomTemplates: props.config.disableCustomTemplates ?? false,
+        rootComponent: findComponentDefinitionById(
+          initialEntry._component,
+          compilationContext
+        ) as InternalComponentDefinition,
+        components: props.components ?? {},
+      };
+
+      editorContextRef.current = editorContext;
+
+      return editorContext;
+    }, [
+      actions,
+      breakpointIndex,
+      compilationCache,
+      compilationContext,
+      focussedField,
+      form,
+      handleSetFocussedField,
+      initialEntry._component,
+      isAdminMode,
+      isEditing,
+      props.components,
+      props.config.backend,
+      props.config.disableCustomTemplates,
+      props.readOnly,
+      props.widgets,
+      syncTemplates,
+      templates,
+    ]);
+
+    const { configAfterAuto, renderableContent, meta } = useBuiltContent(
+      editorContext,
+      props.config,
+      editableData,
+      externalData,
+      props.onExternalDataChange
+    );
+
+    editorContext.compiledComponentConfig = renderableContent;
+    editorContext.configAfterAuto = configAfterAuto;
+
+    console.debug("editable data", editableData);
+    console.debug("focused field", focussedField);
+    console.debug("meta", meta);
+    console.debug("compiled config", {
+      configAfterAuto,
+      renderableContent,
+    });
+    console.debug("external data", externalData);
+
+    window.editorWindowAPI = window.editorWindowAPI || {};
+    window.editorWindowAPI.editorContext = editorContext;
+    window.editorWindowAPI.meta = meta;
+    window.editorWindowAPI.compiled = renderableContent;
+    window.editorWindowAPI.externalData = externalData;
+
+    useEffect(() => {
+      push({
+        config: initialEntry,
+        focussedField: [],
+      });
+    }, []);
+
+    const [canvasLoaded, setCanvasLoaded] = useState(false);
+
+    useEffect(() => {
+      function handleEditorEvents(
+        event:
+          | ComponentPickerOpenedEvent
+          | ItemInsertedEvent
+          | ItemMovedEvent
+          | ChangeResponsiveEvent
+          | SetFocussedFieldEvent
+          | UndoEvent
+          | RedoEvent
+          | FormChangeEvent
+          | CanvasLoadedEvent
+          | RemoveItemsEvent
+          | PasteItemsEvent
+          | MoveItemsEvent
+          | LogSelectedEvent
+      ) {
+        switch (event.data.type) {
+          case "@easyblocks-editor/remove-items": {
+            actions.removeItems(event.data.payload.paths);
+            break;
+          }
+
+          case "@easyblocks-editor/paste-items": {
+            actions.pasteItems(event.data.payload.configs);
+            break;
+          }
+
+          case "@easyblocks-editor/move-items": {
+            actions.moveItems(
+              event.data.payload.paths,
+              event.data.payload.direction
+            );
+
+            break;
+          }
+
+          case "@easyblocks-editor/log-selected-items": {
+            actions.logSelectedItems();
+            break;
+          }
+
+          case "@easyblocks-editor/canvas-loaded": {
+            setCanvasLoaded(true);
+            break;
+          }
+
+          case "@easyblocks-editor/form-change": {
+            if (event.data.payload.focussedField) {
+              actions.runChange(() => {
+                if (
+                  event.data.type === "@easyblocks-editor/form-change" &&
+                  Array.isArray(event.data.payload.focussedField)
+                ) {
+                  form.change(event.data.payload.key, event.data.payload.value);
+                  return event.data.payload.focussedField;
+                }
+              });
+            } else {
+              form.change(event.data.payload.key, event.data.payload.value);
+            }
+
+            break;
+          }
+
+          case "@easyblocks-editor/focus": {
+            handleSetFocussedField(event.data.payload.target);
+            break;
+          }
+
+          case "@easyblocks-editor/change-responsive": {
+            onViewportChange(event.data.payload.device);
+            break;
+          }
+
+          case "@easyblocks-editor/undo": {
+            undo();
+            break;
+          }
+
+          case "@easyblocks-editor/redo": {
+            redo();
+            break;
+          }
+
+          case "@easyblocks-editor/component-picker-opened": {
+            actions
+              .openComponentPicker({ path: event.data.payload.path })
+              .then((config) => {
+                const shopstoryCanvasIframe = window.document.getElementById(
+                  "shopstory-canvas"
+                ) as HTMLIFrameElement | undefined;
+
+                shopstoryCanvasIframe?.contentWindow?.postMessage(
+                  componentPickerClosed(config),
+                  "*"
+                );
+              });
+
+            break;
+          }
+
+          case "@easyblocks-editor/item-inserted": {
+            actions.insertItem(event.data.payload);
+            break;
+          }
+
+          case "@easyblocks-editor/item-moved": {
+            const { fromPath, toPath, placement } = event.data.payload;
+            const editorContext = editorContextRef.current as EditorContextType;
+
+            const fromPathParseResult = parsePath(fromPath, editorContext.form);
+            const toPathParseResult = parsePath(toPath, editorContext.form);
+
+            if (
+              !fromPathParseResult.parent ||
+              !toPathParseResult.parent ||
+              fromPathParseResult.index === undefined ||
+              toPathParseResult === undefined
+            ) {
+              return;
+            }
+
+            if (
+              fromPathParseResult.parent.path === toPathParseResult.parent.path
+            ) {
+              const pathToMove = `${
+                fromPathParseResult.parent.path
+                  ? fromPathParseResult.parent.path + "."
+                  : ""
+              }${fromPathParseResult.parent.fieldName}`;
+
+              actions.runChange(() => {
+                form.mutators.move(
+                  pathToMove,
+                  fromPathParseResult.index,
+                  toPathParseResult.index
+                );
+
+                return [toPath];
+              });
+            } else {
+              // TODO: We should reuse logic of pasting items here, but we need to handle the case of pasting into placeholder (empty array)
+              const isToPathPlaceholder =
+                toPathParseResult.fieldName !== undefined;
+
+              const insertionPath = `${
+                toPathParseResult.parent.path === ""
+                  ? ""
+                  : toPathParseResult.parent.path + "."
+              }${toPathParseResult.parent.fieldName}${
+                isToPathPlaceholder
+                  ? `.${toPathParseResult.index}.${toPathParseResult.fieldName}`
+                  : ""
+              }`;
+
+              actions.runChange(() => {
+                const newConfig = duplicateConfig(
+                  dotNotationGet(form.values, fromPath),
+                  editorContext
+                );
+
+                const insertionIndex = calculateInsertionIndex(
+                  fromPath,
+                  toPath,
+                  placement,
+                  form
+                );
+
+                form.mutators.insert(insertionPath, insertionIndex, newConfig);
+
+                actions.removeItems([fromPath]);
+
+                return [
+                  isToPathPlaceholder
+                    ? `${insertionPath}.0`
+                    : `${insertionPath}.${insertionIndex}`,
+                ];
+              });
+            }
+
+            break;
+          }
+
+          default:
+            break;
         }
+      }
 
-        case "@easyblocks-editor/paste-items": {
-          console.log(focussedField);
-          actions.pasteItems(event.data.payload.configs);
-          break;
-        }
+      window.addEventListener("message", handleEditorEvents);
 
-        case "@easyblocks-editor/move-items": {
-          actions.moveItems(
-            event.data.payload.paths,
-            event.data.payload.direction
+      return () => {
+        window.removeEventListener("message", handleEditorEvents);
+      };
+    }, [actions, form, onViewportChange, handleSetFocussedField, redo, undo]);
+
+    const shopstoryCanvasIframe = useRef<HTMLIFrameElement | null>(null);
+
+    useEffect(() => {
+      const iframe = document.getElementById(
+        "shopstory-canvas"
+      ) as HTMLIFrameElement | null;
+      shopstoryCanvasIframe.current = iframe;
+    }, []);
+
+    const sendCanvasData = useCallback(() => {
+      setFocussedField((focussedField) => {
+        setEditing((isEditing) => {
+          shopstoryCanvasIframe.current?.contentWindow?.postMessage(
+            {
+              type: "@easyblocks/canvas-data",
+              data: JSON.stringify({
+                compiled: renderableContent,
+                meta,
+                externalData: externalData,
+                formValues: form.values,
+                definitions: editorContext.definitions,
+                locale: editorContext.contextParams.locale,
+                locales: editorContext.locales,
+                isEditing,
+                devices: editorContext.devices,
+                focussedField,
+              }),
+            },
+            "*"
           );
 
-          break;
-        }
+          return isEditing;
+        });
 
-        case "@easyblocks-editor/log-selected-items": {
-          actions.logSelectedItems();
-          break;
-        }
+        return focussedField;
+      });
+    }, [
+      editorContext.contextParams.locale,
+      editorContext.definitions,
+      editorContext.devices,
+      editorContext.locales,
+      externalData,
+      form.values,
+      meta,
+      renderableContent,
+    ]);
 
-        case "@easyblocks-editor/canvas-loaded": {
-          setCanvasLoaded(true);
-          break;
-        }
-
-        case "@easyblocks-editor/form-change": {
-          if (event.data.payload.focussedField) {
-            actions.runChange(() => {
-              if (
-                event.data.type === "@easyblocks-editor/form-change" &&
-                Array.isArray(event.data.payload.focussedField)
-              ) {
-                form.change(event.data.payload.key, event.data.payload.value);
-                return event.data.payload.focussedField;
-              }
-            });
-          } else {
-            form.change(event.data.payload.key, event.data.payload.value);
-          }
-
-          break;
-        }
-
-        case "@easyblocks-editor/focus": {
-          handleSetFocussedField(event.data.payload.target);
-          break;
-        }
-
-        case "@easyblocks-editor/change-responsive": {
-          setCurrentViewport(event.data.payload.device);
-          break;
-        }
-
-        case "@easyblocks-editor/undo": {
-          undo();
-          break;
-        }
-
-        case "@easyblocks-editor/redo": {
-          redo();
-          break;
-        }
-
-        case "@easyblocks-editor/component-picker-opened": {
-          actions
-            .openComponentPicker({ path: event.data.payload.path })
-            .then((config) => {
-              const shopstoryCanvasIframe = window.document.getElementById(
-                "shopstory-canvas"
-              ) as HTMLIFrameElement | undefined;
-
-              shopstoryCanvasIframe?.contentWindow?.postMessage(
-                componentPickerClosed(config),
-                "*"
-              );
-            });
-
-          break;
-        }
-
-        case "@easyblocks-editor/item-inserted": {
-          actions.insertItem(event.data.payload);
-          break;
-        }
-
-        case "@easyblocks-editor/item-moved": {
-          const { fromPath, toPath, placement } = event.data.payload;
-
-          const fromPathParseResult = parsePath(fromPath, editorContext.form);
-          const toPathParseResult = parsePath(toPath, editorContext.form);
-
-          if (
-            !fromPathParseResult.parent ||
-            !toPathParseResult.parent ||
-            fromPathParseResult.index === undefined ||
-            toPathParseResult === undefined
-          ) {
-            return;
-          }
-
-          if (
-            fromPathParseResult.parent.path === toPathParseResult.parent.path
-          ) {
-            const pathToMove = `${
-              fromPathParseResult.parent.path
-                ? fromPathParseResult.parent.path + "."
-                : ""
-            }${fromPathParseResult.parent.fieldName}`;
-
-            actions.runChange(() => {
-              form.mutators.move(
-                pathToMove,
-                fromPathParseResult.index,
-                toPathParseResult.index
-              );
-
-              return [toPath];
-            });
-          } else {
-            // TODO: We should reuse logic of pasting items here, but we need to handle the case of pasting into placeholder (empty array)
-            const isToPathPlaceholder =
-              toPathParseResult.fieldName !== undefined;
-
-            const insertionPath = `${
-              toPathParseResult.parent.path === ""
-                ? ""
-                : toPathParseResult.parent.path + "."
-            }${toPathParseResult.parent.fieldName}${
-              isToPathPlaceholder
-                ? `.${toPathParseResult.index}.${toPathParseResult.fieldName}`
-                : ""
-            }`;
-
-            actions.runChange(() => {
-              const newConfig = duplicateConfig(
-                dotNotationGet(form.values, fromPath),
-                editorContext
-              );
-
-              const insertionIndex = calculateInsertionIndex(
-                fromPath,
-                toPath,
-                placement,
-                form
-              );
-
-              form.mutators.insert(insertionPath, insertionIndex, newConfig);
-
-              actions.removeItems([fromPath]);
-
-              return [
-                isToPathPlaceholder
-                  ? `${insertionPath}.0`
-                  : `${insertionPath}.${insertionIndex}`,
-              ];
-            });
-          }
-
-          break;
-        }
-
-        default:
-          break;
+    useEffect(() => {
+      sendCanvasData();
+      if (window.editorWindowAPI.onUpdate) {
+        window.editorWindowAPI.onUpdate();
       }
-    }
+    }, [sendCanvasData, canvasLoaded]);
 
-    window.addEventListener("message", handleEditorEvents);
+    const [isDataSaverOverlayOpen, setDataSaverOverlayOpen] = useState(false);
 
-    return () => {
-      window.removeEventListener("message", handleEditorEvents);
-    };
-  }, [focussedField]);
+    useEditorGlobalKeyboardShortcuts(editorContext);
 
-  const shopstoryCanvasIframe = useRef<HTMLIFrameElement | null>(null);
+    const { saveNow } = useDataSaver(initialDocument, editorContext);
 
-  useEffect(() => {
-    const iframe = document.getElementById(
-      "shopstory-canvas"
-    ) as HTMLIFrameElement | null;
-    shopstoryCanvasIframe.current = iframe;
-  }, []);
+    const onTopBarClose = useCallback(() => {
+      setDataSaverOverlayOpen(true);
+      saveNow().finally(() => {
+        setDataSaverOverlayOpen(false);
 
-  const sendCanvasData = () => {
-    shopstoryCanvasIframe?.current?.contentWindow?.postMessage(
-      {
-        type: "@easyblocks/canvas-data",
-        data: JSON.stringify({
-          compiled: renderableContent,
-          meta,
-          externalData: externalData,
-          formValues: form.values,
-          definitions: editorContext.definitions,
-          locale: editorContext.contextParams.locale,
-          locales: editorContext.locales,
-          isEditing,
-          devices: editorContext.devices,
-          focussedField,
-        }),
-      },
-      "*"
-    );
-  };
+        window.postMessage(
+          {
+            type: "@easyblocks/closed",
+          },
+          "*"
+        );
 
-  const [isDataSaverOverlayOpen, setDataSaverOverlayOpen] = useState(false);
+        if (props.onClose) {
+          props.onClose();
+        }
+      });
+    }, [props, saveNow]);
 
-  useEditorGlobalKeyboardShortcuts(editorContext);
+    const appHeight = heightMode === "viewport" ? "100vh" : "100%";
 
-  const { saveNow } = useDataSaver(initialDocument, editorContext);
+    useEffect(() => {
+      Modal.setAppElement("#shopstory-app");
+    }, []);
 
-  const appHeight = heightMode === "viewport" ? "100vh" : "100%";
+    return (
+      <div id="shopstory-app" style={{ height: appHeight, overflow: "hidden" }}>
+        {isDataSaverOverlayOpen && (
+          <DataSaverRoot>
+            <DataSaverOverlay />
 
-  useEffect(() => {
-    Modal.setAppElement("#shopstory-app");
-  }, []);
+            <DataSaverModal>
+              Saving data, please do not close the window...
+            </DataSaverModal>
+          </DataSaverRoot>
+        )}
 
-  return (
-    <div id={"shopstory-app"} style={{ height: appHeight, overflow: "hidden" }}>
-      {isDataSaverOverlayOpen && (
-        <DataSaverRoot>
-          <DataSaverOverlay></DataSaverOverlay>
+        <EditorContext.Provider value={editorContext}>
+          <ConfigAfterAutoContext.Provider value={configAfterAuto}>
+            <EditorExternalDataProvider externalData={externalData}>
+              <div id="rootContainer" />
 
-          <DataSaverModal>
-            Saving data, please do not close the window...
-          </DataSaverModal>
-        </DataSaverRoot>
-      )}
-      <EditorContext.Provider value={editorContext}>
-        <ConfigAfterAutoContext.Provider value={configAfterAuto}>
-          <EditorExternalDataProvider externalData={externalData}>
-            <div id="rootContainer" />
-            <EditorTopBar
-              onUndo={undo}
-              onRedo={redo}
-              onClose={() => {
-                setDataSaverOverlayOpen(true);
-                saveNow().finally(() => {
-                  setDataSaverOverlayOpen(false);
+              <EditorTopBar
+                onUndo={undo}
+                onRedo={redo}
+                onClose={onTopBarClose}
+                devices={compilationContext.devices}
+                viewport={currentViewport.value}
+                onViewportChange={onViewportChange}
+                onIsEditingChange={handleSetEditing}
+                isEditing={isEditing}
+                saveLabel="Save"
+                locale={compilationContext.contextParams.locale}
+                locales={editorContext.locales}
+                onLocaleChange={noop}
+                onAdminModeChange={onAdminModeChange}
+                hideCloseButton={props.config.hideCloseButton ?? false}
+                readOnly={editorContext.readOnly}
+              />
 
-                  window.postMessage(
-                    {
-                      type: "@easyblocks/closed",
-                    },
-                    "*"
-                  );
-
-                  if (props.onClose) {
-                    props.onClose();
-                  }
-                });
-              }}
-              devices={compilationContext.devices}
-              viewport={currentViewport}
-              onViewportChange={setCurrentViewport}
-              onIsEditingChange={handleSetEditing}
-              isEditing={isEditing}
-              saveLabel={"Save"}
-              locale={compilationContext.contextParams.locale}
-              locales={editorContext.locales}
-              onLocaleChange={() => {}}
-              onAdminModeChange={(val) => {
-                setAdminMode(val);
-              }}
-              hideCloseButton={props.config.hideCloseButton ?? false}
-              readOnly={editorContext.readOnly}
-            />
-            <SidebarAndContentContainer height={appHeight}>
-              <ContentContainer
-                onClick={() => {
-                  setFocussedField([]);
-                }}
-              >
-                <EditorIframe
-                  width={iframeSize.width}
-                  height={iframeSize.height}
-                  transform={iframeSize.transform}
-                  containerRef={iframeContainerRef}
-                  canvasURL={props.canvasURL}
-                />
-                {isEditing && (
-                  <SelectionFrame
+              <SidebarAndContentContainer height={appHeight}>
+                <ContentContainer onClick={onFocussedFieldClear}>
+                  <EditorIframe
                     width={iframeSize.width}
                     height={iframeSize.height}
+                    fullWidth={iframeSize.fullWidth}
                     transform={iframeSize.transform}
+                    containerRef={iframeContainerRef}
+                    canvasURL={props.canvasURL}
+                  />
+
+                  {isEditing && (
+                    <SelectionFrame
+                      width={iframeSize.width}
+                      height={iframeSize.height}
+                      transform={iframeSize.transform}
+                    />
+                  )}
+                </ContentContainer>
+
+                {isEditing && (
+                  <SidebarContainer ref={sidebarNodeRef}>
+                    <EditorSidebar focussedField={focussedField} form={form} />
+                  </SidebarContainer>
+                )}
+
+                {componentPickerData && (
+                  <ModalPicker
+                    onClose={closeComponentPickerModal}
+                    config={componentPickerData.config}
+                    pickers={props.pickers}
                   />
                 )}
-              </ContentContainer>
-              {isEditing && (
-                <SidebarContainer ref={sidebarNodeRef}>
-                  <EditorSidebar focussedField={focussedField} form={form} />
-                </SidebarContainer>
-              )}
-              {componentPickerData && (
-                <ModalPicker
-                  onClose={closeComponentPickerModal}
-                  config={componentPickerData.config}
-                  pickers={props.pickers}
+              </SidebarAndContentContainer>
+
+              {openTemplateModalAction && (
+                <TemplateModal
+                  action={openTemplateModalAction}
+                  onClose={() => {
+                    setOpenTemplateModalAction(undefined);
+                  }}
+                  backend={editorContext.backend}
                 />
               )}
-            </SidebarAndContentContainer>
-
-            {openTemplateModalAction && (
-              <TemplateModal
-                action={openTemplateModalAction}
-                onClose={() => {
-                  setOpenTemplateModalAction(undefined);
-                }}
-                backend={editorContext.backend}
-              />
-            )}
-          </EditorExternalDataProvider>
-        </ConfigAfterAutoContext.Provider>
-      </EditorContext.Provider>
-    </div>
-  );
-};
+            </EditorExternalDataProvider>
+          </ConfigAfterAutoContext.Provider>
+        </EditorContext.Provider>
+      </div>
+    );
+  }
+);
 
 function adaptRemoteConfig(
   config: NoCodeComponentEntry,
   compilationContext: CompilationContextType
-) {
+): NoCodeComponentEntry {
   const withoutLocalizedFlag = removeLocalizedFlag(config, compilationContext);
   const normalized = normalize(withoutLocalizedFlag, compilationContext);
   return normalized;
@@ -1261,54 +1393,55 @@ function calculateInsertionIndex(
   toPath: string,
   placement: "before" | "after" | undefined,
   form: Form
-) {
+): number {
   const mostCommonPath = getMostCommonSubPath(fromPath, toPath);
-  const mostCommonPathParseResult = parsePath(mostCommonPath ?? "", form);
+  const mostCommonPathParseResult = parsePath(mostCommonPath, form);
   const toPathParseResult = parsePath(toPath, form);
   const toPathNoCodeEntry = dotNotationGet(form.values, toPath);
 
-  if (toPathNoCodeEntry.length === 0) {
+  if (toPathNoCodeEntry.length === 0 || toPathParseResult.index === undefined) {
     return 0;
   }
 
   // If there is no index in common path, it means that we're moving items between two sections
   if (mostCommonPathParseResult.index === undefined) {
-    const fromPathRootSectionIndex = +fromPath.split(".")[1];
-    const toPathRootSectionIndex = +toPath.split(".")[1];
+    const fromPathRootSectionIndex = Number(fromPath.split(".")[1]);
+    const toPathRootSectionIndex = Number(toPath.split(".")[1]);
 
     if (fromPathRootSectionIndex > toPathRootSectionIndex) {
       if (placement) {
         if (placement === "before") {
-          return toPathParseResult.index!;
+          return toPathParseResult.index;
         }
 
-        return toPathParseResult.index! + 1;
+        return toPathParseResult.index + 1;
       }
 
-      return toPathParseResult.index!;
+      return toPathParseResult.index;
     }
 
     if (placement) {
       if (placement === "before") {
-        return toPathParseResult.index!;
+        return toPathParseResult.index;
       }
 
-      return toPathParseResult.index! + 1;
+      return toPathParseResult.index + 1;
     }
 
-    return toPathParseResult.index! + 1;
+    return toPathParseResult.index + 1;
   }
 
-  return toPathParseResult.index! + 1;
+  return toPathParseResult.index + 1;
 }
 
-function getMostCommonSubPath(path1: string, path2: string) {
+function getMostCommonSubPath(path1: string, path2: string): string {
   const fromPathParts = path1.split(".");
   const toPathParts = path2.split(".");
+  const length = Math.min(fromPathParts.length, toPathParts.length);
 
-  let mostCommonPathParts: Array<string> | undefined = undefined;
+  const mostCommonPathParts: string[] = [];
 
-  for (let i = 0; i < Math.min(fromPathParts.length, toPathParts.length); i++) {
+  for (let i = 0; i < length; ++i) {
     const currentFromPathPart = fromPathParts[i];
     const currentToPathPart = toPathParts[i];
 
@@ -1316,15 +1449,10 @@ function getMostCommonSubPath(path1: string, path2: string) {
       break;
     }
 
-    if (!mostCommonPathParts) {
-      mostCommonPathParts = [currentFromPathPart];
-      continue;
-    }
-
     mostCommonPathParts.push(currentFromPathPart);
   }
 
-  return mostCommonPathParts?.join(".");
+  return mostCommonPathParts.join(".");
 }
 
 function findConfigById(
@@ -1347,7 +1475,10 @@ function findConfigById(
   return foundConfig;
 }
 
-function getMatchingDevice(devices: Array<DeviceRange>, width: number) {
+function getMatchingDevice(
+  devices: Array<DeviceRange>,
+  width: number
+): DeviceRange | null {
   const highestDevice = devices.find((d) => d.breakpoint === null);
 
   const visibleDevices = devices.filter(
@@ -1357,7 +1488,7 @@ function getMatchingDevice(devices: Array<DeviceRange>, width: number) {
   for (let i = 0; i < visibleDevices.length; i++) {
     const currentDevice = visibleDevices[i];
 
-    if (currentDevice.breakpoint! > width) {
+    if ((currentDevice.breakpoint ?? 0) > width) {
       return currentDevice;
     }
   }

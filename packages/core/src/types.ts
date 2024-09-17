@@ -1,33 +1,33 @@
-import { ComponentType, ReactElement } from "react";
-import { PartialDeep } from "type-fest";
-import { Locale } from "./locales";
-import { InternalComponentDefinitions } from "./compiler/types";
+import type { ComponentType, ReactElement } from "react";
+import type { PartialDeep } from "type-fest";
+import type { Locale } from "./locales";
+import type { InternalComponentDefinitions } from "./compiler/types";
 
 export type ScalarOrCollection<T> = T | Array<T>;
 
-export type PlaceholderAppearance = {
+export interface PlaceholderAppearance {
   width?: number;
   height?: number;
   aspectRatio?: number;
   label?: string;
-};
+}
 
 export interface ComponentConfigBase<Identifier extends string> {
   _component: Identifier;
   _id: string;
 }
 
-export type NoCodeComponentEntry = {
+export interface NoCodeComponentEntry {
   _component: string; // instance of the component (unique id)
   _id: string;
   [key: string]: any; // props
-};
+}
 
-export type ThemeTokenValue<T> = {
+export interface ThemeTokenValue<T> {
   value: T;
   isDefault: boolean;
   label?: string;
-};
+}
 
 export type Spacing = string; // 10px, 0px, 10vw, etc
 
@@ -35,10 +35,10 @@ export type Font = object;
 
 export type Color = string;
 
-export type TrulyResponsiveValue<T> = {
+export interface TrulyResponsiveValue<T> {
   [key: string]: T | true | undefined;
   $res: true;
-};
+}
 
 export type ResponsiveValue<T> = T | TrulyResponsiveValue<T>;
 
@@ -50,12 +50,12 @@ export type ThemeColor = ResponsiveValue<Color>;
 
 export type ThemeFont = ResponsiveValue<{ [key: string]: any }>;
 
-export type ButtonCustomComponent = CustomComponentShared & {
+export interface ButtonCustomComponent extends CustomComponentShared {
   builtinProps?: {
     label?: "on" | "off";
     symbol?: "on" | "off" | "optional";
   };
-};
+}
 
 export type StringSchemaProp = ValueSchemaProp<"string", string, "optional"> &
   SchemaPropParams<{
@@ -132,15 +132,13 @@ export type StringTokenSchemaProp = ValueSchemaProp<
     true
   >;
 
-export type SpaceSchemaProp = ValueSchemaProp<
-  "space",
-  ResponsiveValue<TokenValue<Spacing>>,
-  "forced"
-> &
-  SchemaPropParams<{
-    prefix?: string;
-    autoConstant?: number;
-  }>;
+export interface SpaceSchemaProp
+  extends ValueSchemaProp<
+      "space",
+      ResponsiveValue<TokenValue<Spacing>>,
+      "forced"
+    >,
+    SchemaPropParams<{ prefix?: string; autoConstant?: number }> {}
 
 export type FontSchemaProp = ValueSchemaProp<
   "font",
@@ -160,24 +158,24 @@ export type PassedField =
   | { name: string; label: string; showWhen?: any; group?: string }
   | string;
 
-export type ComponentSchemaProp = SchemaPropShared<"component"> & {
+export interface ComponentSchemaProp extends SchemaPropShared<"component"> {
   accepts: string[];
   picker?: ComponentPickerType;
   required?: boolean;
   noInline?: boolean;
   placeholderAppearance?: PlaceholderAppearance;
-};
+}
 
-export type ComponentCollectionSchemaProp =
-  SchemaPropShared<"component-collection"> & {
-    accepts: string[];
-    picker?: ComponentPickerType;
-    hideFields?: string[];
-    itemFields?: SchemaProp[];
-    passFields?: PassedField[];
-    noInline?: boolean;
-    placeholderAppearance?: PlaceholderAppearance;
-  };
+export interface ComponentCollectionSchemaProp
+  extends SchemaPropShared<"component-collection"> {
+  accepts: string[];
+  picker?: ComponentPickerType;
+  hideFields?: string[];
+  itemFields?: SchemaProp[];
+  passFields?: PassedField[];
+  noInline?: boolean;
+  placeholderAppearance?: PlaceholderAppearance;
+}
 
 export type ComponentCollectionLocalisedSchemaProp = Omit<
   ComponentCollectionSchemaProp,
@@ -188,14 +186,15 @@ export type ComponentCollectionLocalisedSchemaProp = Omit<
   placeholderAppearance?: PlaceholderAppearance;
 };
 
-export type TextSchemaProp = ValueSchemaProp<
-  "text",
-  LocalTextReference | ExternalReference | string,
-  "never"
-> & {
+export interface TextSchemaProp
+  extends ValueSchemaProp<
+    "text",
+    LocalTextReference | ExternalReference | string,
+    "never"
+  > {
   normalize?: (x: string) => string | null;
   [key: string]: any;
-};
+}
 
 export type PositionVertical = "top" | "center" | "bottom";
 
@@ -209,14 +208,15 @@ export type PositionSchemaProp = ValueSchemaProp<
   "forced"
 >;
 
-export type ExternalSchemaProp = ValueSchemaProp<
-  string & Record<never, never>,
-  ExternalReference,
-  "optional"
-> & {
+export interface ExternalSchemaProp
+  extends ValueSchemaProp<
+    string & Record<never, never>,
+    ExternalReference,
+    "optional"
+  > {
   params?: ExternalParams;
   optional?: boolean;
-};
+}
 
 export type LocalSchemaProp = ValueSchemaProp<
   string & Record<never, never>,
@@ -224,14 +224,11 @@ export type LocalSchemaProp = ValueSchemaProp<
   "optional"
 >;
 
-export type TokenSchemaProp = ValueSchemaProp<
-  string & Record<never, never>,
-  any,
-  "forced"
-> &
-  SchemaPropParams<{
-    extraValues: Array<any | { value: any; label: string }>;
-  }>;
+export interface TokenSchemaProp
+  extends ValueSchemaProp<string & Record<never, never>, any, "forced">,
+    SchemaPropParams<{
+      extraValues: Array<any | { value: any; label: string }>;
+    }> {}
 
 export type SchemaProp =
   | StringSchemaProp
@@ -268,31 +265,31 @@ export type AnyValueSchemaProp =
   | PositionSchemaProp
   | ExternalSchemaProp;
 
-type CustomComponentShared = {
+interface CustomComponentShared {
   id: string;
   hidden?: boolean;
   schema: SchemaProp[];
   label?: string;
   previewImage?: string;
-};
+}
 
-export type ConfigDeviceRange = {
+export interface ConfigDeviceRange {
   startsFrom?: number;
   w?: number;
   h?: number | null;
   hidden?: boolean;
-};
+}
 
-export type ConfigDevices = {
+export interface ConfigDevices {
   xs?: ConfigDeviceRange;
   sm?: ConfigDeviceRange;
   md?: ConfigDeviceRange;
   lg?: ConfigDeviceRange;
   xl?: ConfigDeviceRange;
   "2xl"?: ConfigDeviceRange;
-};
+}
 
-export type UserDefinedTemplate = {
+export interface UserDefinedTemplate {
   id: string;
   label: string;
   thumbnail?: string;
@@ -301,9 +298,9 @@ export type UserDefinedTemplate = {
   isUserDefined: true;
   width?: number;
   widthAuto?: boolean;
-};
+}
 
-export type InternalTemplate = {
+export interface InternalTemplate {
   id: string;
   label?: string;
   thumbnail?: string;
@@ -312,73 +309,75 @@ export type InternalTemplate = {
   isUserDefined?: false;
   width?: number;
   widthAuto?: boolean;
-};
+}
 
 export type Template = InternalTemplate | UserDefinedTemplate;
 
-export type ConfigTokenValue<T> = {
+export interface ConfigTokenValue<T> {
   id: string;
   label?: string;
   value: T;
   isDefault?: boolean;
-};
+}
 
 export type ExternalParams = Record<string, unknown>;
 
-export type ContextParams = {
+export interface ContextParams {
   locale: string;
   [key: string]: any;
-};
+}
 
-export type WidgetComponentProps<Identifier extends NonNullish = NonNullish> = {
+export interface WidgetComponentProps<
+  Identifier extends NonNullish = NonNullish
+> {
   id: ExternalReference<Identifier>["id"];
   onChange: (newId: ExternalReference<Identifier>["id"]) => void;
   params?: Record<string, any>;
   field: Field;
-};
+}
 
-export type InlineTypeWidgetComponentProps<
+export interface InlineTypeWidgetComponentProps<
   Type extends NonNullish = NonNullish
-> = {
+> {
   value: Type;
   onChange: (newValue: Type) => void;
   params?: Record<string, any>;
   field: Field;
-};
+}
 
 export type TokenTypeWidgetComponentProps<
   Type extends NonNullish = NonNullish
 > = InlineTypeWidgetComponentProps<Type>;
 
-export type Widget = {
+export interface Widget {
   id: string;
   label: string;
-};
+}
 
-export type ExternalDefinition = {
+export interface ExternalDefinition {
   widgets: Array<Widget>;
-};
+}
 
-export type LocalizedText = {
+export interface LocalizedText {
   [locale: string]: string;
-};
+}
 
-export type NoCodeComponentStylesFunctionInput<
+export interface NoCodeComponentStylesFunctionInput<
   Values extends Record<string, any> = Record<string, any>,
   Params extends Record<string, any> = Record<string, any>
-> = {
+> {
   values: Values;
   params: { $width: number; $widthAuto: boolean } & Params;
   device: DeviceRange;
   isEditing: boolean;
-};
+}
 
 export type InferNoCodeComponentStylesFunctionInput<T> =
   T extends NoCodeComponentDefinition<infer Values, infer Params>
     ? NoCodeComponentStylesFunctionInput<Values, Params>
     : never;
 
-export type NoCodeComponentStylesFunctionResult = {
+export interface NoCodeComponentStylesFunctionResult {
   props?: Record<string, any>;
   components?: Record<
     string,
@@ -391,7 +390,7 @@ export type NoCodeComponentStylesFunctionResult = {
     }
   >;
   styled?: Record<string, ScalarOrCollection<Record<string, any>>>;
-};
+}
 
 export type NoCodeComponentStylesFunction<
   Values extends Record<string, any> = Record<string, any>,
@@ -400,15 +399,15 @@ export type NoCodeComponentStylesFunction<
   input: NoCodeComponentStylesFunctionInput<Values, Params>
 ) => NoCodeComponentStylesFunctionResult;
 
-export type NoCodeComponentEditingFunctionInput<
+export interface NoCodeComponentEditingFunctionInput<
   Values extends Record<string, any> = Record<string, any>,
   Params extends Record<string, any> = Record<string, any>
-> = {
+> {
   values: Values;
   params: Params;
   editingInfo: EditingInfo;
   device: DeviceRange;
-};
+}
 
 export type NoCodeComponentEditingFunction<
   Values extends Record<string, any> = Record<string, any>,
@@ -417,14 +416,14 @@ export type NoCodeComponentEditingFunction<
   input: NoCodeComponentEditingFunctionInput<Values, Params>
 ) => NoCodeComponentEditingFunctionResult;
 
-export type NoCodeComponentAutoFunctionInput<
+export interface NoCodeComponentAutoFunctionInput<
   Values extends Record<string, any> = Record<string, any>,
   Params extends Record<string, any> = Record<string, any>
-> = {
+> {
   values: { [key in keyof Values]: ResponsiveValue<Values[key]> };
   params: { [key in keyof Params]: ResponsiveValue<Params[key]> };
   devices: Devices;
-};
+}
 
 export type NoCodeComponentAutoFunction<
   Values extends Record<string, any> = Record<string, any>,
@@ -435,23 +434,23 @@ export type NoCodeComponentAutoFunction<
   }
 ) => any;
 
-export type RootParameter = {
+export interface RootParameter {
   prop: string;
   label: string;
   widgets: Array<Widget>;
-};
+}
 
-export type GroupDefinition = {
+export interface GroupDefinition {
   key: string;
   label: string;
   collapsable?: boolean;
   collapsed?: boolean;
-};
+}
 
-export type NoCodeComponentDefinition<
+export interface NoCodeComponentDefinition<
   Values extends Record<string, any> = Record<string, any>,
   Params extends Record<string, any> = Record<string, any>
-> = {
+> {
   id: string;
   schema: Array<SchemaProp>;
   type?: string | string[];
@@ -469,12 +468,12 @@ export type NoCodeComponentDefinition<
   allowSave?: boolean;
   rootParams?: RootParameter[];
   groups?: GroupDefinition[];
-};
+}
 
 /**
  * @internal
  */
-type ConfigTokens = {
+interface ConfigTokens {
   aspectRatios: string;
   boxShadows: string;
   containerWidths: number;
@@ -482,23 +481,23 @@ type ConfigTokens = {
   fonts: ThemeFont;
   icons: string;
   space: ThemeSpace;
-};
+}
 
-export type InlineTypeDefinition<Value extends NonNullish = any> = {
+export interface InlineTypeDefinition<Value extends NonNullish = any> {
   widget: Widget;
   responsiveness?: "always" | "optional" | "never";
   type: "inline";
   defaultValue: Value;
   validate?: (value: any) => boolean;
-};
+}
 
-export type ExternalTypeDefinition = {
+export interface ExternalTypeDefinition {
   widgets?: Array<Widget>;
   responsiveness?: "always" | "optional" | "never";
   type: "external";
-};
+}
 
-export type TokenTypeDefinition<Value extends NonNullish = any> = {
+export interface TokenTypeDefinition<Value extends NonNullish = any> {
   widget?: Widget;
   responsiveness?: "always" | "optional" | "never";
   type: "token";
@@ -507,7 +506,7 @@ export type TokenTypeDefinition<Value extends NonNullish = any> = {
   extraValues?: Array<Value | { value: Value; label: string }>;
   allowCustom?: boolean;
   validate?: (value: any) => boolean;
-};
+}
 
 export type CustomTypeDefinition =
   | InlineTypeDefinition
@@ -518,13 +517,13 @@ export type CustomTypeDefinition =
  * Backend types
  */
 
-export type Document = {
+export interface Document {
   id: string;
   version: number;
   entry: NoCodeComponentEntry;
-};
+}
 
-export type Backend = {
+export interface Backend {
   documents: {
     get: (payload: { id: string; locale?: string }) => Promise<Document>;
     create: (payload: Omit<Document, "id" | "version">) => Promise<Document>;
@@ -545,13 +544,13 @@ export type Backend = {
     }) => Promise<Omit<UserDefinedTemplate, "entry">>;
     delete: (payload: { id: string }) => Promise<void>;
   };
-};
+}
 
 /**
  * Config
  */
 
-export type Config = {
+export interface Config {
   backend: Backend;
   components?: Array<NoCodeComponentDefinition<any, any>>;
   devices?: ConfigDevices;
@@ -565,9 +564,9 @@ export type Config = {
   } & {
     [key: string & Record<never, never>]: Array<ConfigTokenValue<any>>;
   };
-};
+}
 
-export type SchemaPropShared<Type extends string> = {
+export interface SchemaPropShared<Type extends string> {
   type: Type;
   prop: string;
   label?: string;
@@ -583,7 +582,7 @@ export type SchemaPropShared<Type extends string> = {
   description?: string;
   group?: string;
   layout?: "row" | "column";
-};
+}
 
 type ValueSchemaProp<
   Type extends string,
@@ -604,13 +603,9 @@ type ValueSchemaProp<
 export type SchemaPropParams<
   T extends Record<string, unknown>,
   Required extends boolean = false
-> = Required extends true
-  ? {
-      params: T;
-    }
-  : { params?: T };
+> = Required extends true ? { params: T } : { params?: T };
 
-export type DeviceRange = {
+export interface DeviceRange {
   id: string;
   w: number;
   h: number | null;
@@ -618,7 +613,7 @@ export type DeviceRange = {
   hidden?: boolean;
   label?: string;
   isMain?: boolean;
-};
+}
 
 export type Devices = DeviceRange[];
 
@@ -629,7 +624,7 @@ export type NoCodeComponentChangeFunction = (arg: {
   valuesAfterAuto: Record<string, any>;
 }) => Record<string, any> | undefined;
 
-export type SidebarPreviewVariant = {
+export interface SidebarPreviewVariant {
   description?: string;
   thumbnail?:
     | {
@@ -637,9 +632,9 @@ export type SidebarPreviewVariant = {
         src: string;
       }
     | { type: "color"; color: string };
-};
+}
 
-export type ComponentDefinitionShared<Identifier extends string = string> = {
+export interface ComponentDefinitionShared<Identifier extends string = string> {
   id: Identifier;
   label?: string;
   type?: string | string[];
@@ -656,15 +651,15 @@ export type ComponentDefinitionShared<Identifier extends string = string> = {
 
   hideTemplates?: boolean;
   allowSave?: boolean;
-};
+}
 
-export type NoCodeComponentProps = {
+export interface NoCodeComponentProps {
   __easyblocks: {
     id: string;
     isEditing: boolean;
     isSelected?: boolean;
   };
-};
+}
 
 export type SerializedRenderableComponentDefinition =
   ComponentDefinitionShared & {
@@ -677,36 +672,36 @@ export type SerializedLinkComponentDefinition = ComponentDefinitionShared;
 
 export type SerializedTextModifierDefinition = ComponentDefinitionShared;
 
-export type SerializedComponentDefinitions = {
+export interface SerializedComponentDefinitions {
   components: SerializedRenderableComponentDefinition[];
   actions: SerializedActionComponentDefinition[];
   links: SerializedLinkComponentDefinition[];
   textModifiers: SerializedTextModifierDefinition[];
-};
+}
 
 export type SerializedComponentDefinition =
   | SerializedRenderableComponentDefinition
   | SerializedActionComponentDefinition
   | SerializedLinkComponentDefinition;
 
-export type NonEmptyRenderableContent = {
+export interface NonEmptyRenderableContent {
   renderableContent: CompiledShopstoryComponentConfig;
   configAfterAuto?: any;
-};
+}
 
-export type EmptyRenderableContent = {
+export interface EmptyRenderableContent {
   renderableContent: null;
-};
+}
 
 export type RenderableContent =
   | EmptyRenderableContent
   | NonEmptyRenderableContent;
 
-export type RenderableDocument = {
+export interface RenderableDocument {
   renderableContent: CompiledShopstoryComponentConfig | null;
   meta: CompilationMetadata;
   configAfterAuto?: NoCodeComponentEntry;
-};
+}
 
 export type AnyField = Field & { [key: string]: any };
 
@@ -752,26 +747,27 @@ export type FieldPortal =
       hidden?: boolean;
     };
 
-export type CompiledComponentConfigBase<
+export interface CompiledComponentConfigBase<
   Identifier extends string = string,
   Props extends Record<string, any> = Record<string, any>
-> = {
+> {
   _component: Identifier; // instance of the component (unique id)
   _id: string;
   props: Props;
-};
+}
 
-export type EditingInfoBase = {
+export interface EditingInfoBase {
   direction?: "horizontal" | "vertical";
   noInline?: boolean;
-};
+}
 
-export type WidthInfo = {
+export interface WidthInfo {
   auto: TrulyResponsiveValue<boolean>;
   width: TrulyResponsiveValue<number>;
-};
+}
 
-export type CompiledCustomComponentConfig = CompiledComponentConfigBase & {
+export interface CompiledCustomComponentConfig
+  extends CompiledComponentConfigBase {
   components: {
     [key: string]: (CompiledComponentConfig | ReactElement)[];
   };
@@ -784,31 +780,30 @@ export type CompiledCustomComponentConfig = CompiledComponentConfigBase & {
       };
     };
   };
-};
+}
 
-export type CompiledStyled = {
+export interface CompiledStyled {
   [key: string]: any;
-};
+}
 
-export type CompiledShopstoryComponentConfig = CompiledCustomComponentConfig & {
-  styled: {
-    [key: string]: CompiledStyled;
-  };
-};
+export interface CompiledShopstoryComponentConfig
+  extends CompiledCustomComponentConfig {
+  styled: Record<string, CompiledStyled>;
+}
 
 export type CompiledComponentConfig = CompiledShopstoryComponentConfig;
 
-export type ComponentPlaceholder = {
+export interface ComponentPlaceholder {
   width: number;
   height: number;
   label?: string;
-};
+}
 
-export type EditorSidebarPreviewOptions = {
+export interface EditorSidebarPreviewOptions {
   breakpointIndex: string;
   devices: Devices;
   contextParams: ContextParams;
-};
+}
 
 export interface ConfigModel {
   id: string;
@@ -818,22 +813,22 @@ export interface ConfigModel {
   created_at: string;
 }
 
-export type ExternalWithSchemaProp = {
+export interface ExternalWithSchemaProp {
   id: string;
   externalReference: ExternalReference;
   schemaProp: ExternalSchemaProp;
-};
+}
 
-export type CompilationMetadata = {
+export interface CompilationMetadata {
   vars: {
     devices: Devices;
     locale: string;
     definitions: SerializedComponentDefinitions;
     [key: string]: any;
   };
-};
+}
 
-export type CompilerModule = {
+export interface CompilerModule {
   compile: (
     content: NoCodeComponentEntry,
     config: Config,
@@ -843,6 +838,7 @@ export type CompilerModule = {
     configAfterAuto?: any;
     meta: CompilationMetadata;
   };
+
   /**
    * We need findResources function that also comes from the cloud.
    * Without it we would have to analyse the config in ShopstoryClient in order to find resources to be fetched.
@@ -853,56 +849,59 @@ export type CompilerModule = {
     config: Config,
     contextParams: ContextParams
   ) => ExternalWithSchemaProp[];
+
   validate: (input: unknown) =>
     | {
         isValid: true;
         input: Document | NoCodeComponentEntry | null | undefined;
       }
     | { isValid: false };
-};
+}
 
-export type EditingField = {
+export interface EditingField {
   type: "field";
   path: string;
   label?: string;
   group?: string;
   visible?: boolean;
-};
+}
 
-export type EditingComponentFields = {
+export interface EditingComponentFields {
   type: "fields";
   path: string;
   filters?: {
     group?: ScalarOrCollection<string>;
   };
-};
+}
 
 export type AnyEditingField = EditingField | EditingComponentFields;
 
-export type ChildComponentEditingInfo = {
+export interface ChildComponentEditingInfo {
   selectable?: boolean;
   direction?: "horizontal" | "vertical";
   fields: Array<EditingField>;
-};
+}
 
-export type EditingInfo = {
+export interface EditingInfo {
   fields: Array<EditingField>;
   components: Record<string, ScalarOrCollection<ChildComponentEditingInfo>>;
-};
+}
 
-export type NoCodeComponentEditingFunctionResult = {
+export interface NoCodeComponentEditingFunctionResult {
   fields?: Array<AnyEditingField>;
   components?: {
     [field: string]: ScalarOrCollection<PartialDeep<ChildComponentEditingInfo>>;
   };
-};
+}
 
-type FetchResourceResolvedResult<T> = {
+export interface FetchResourceResolvedResult<T> {
   type: string & Record<never, never>;
   value: T;
-};
+}
 
-type FetchResourceRejectedResult = { error: Error };
+interface FetchResourceRejectedResult {
+  error: Error;
+}
 
 // {} in TS means any non nullish value and it's used on purpose here
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -914,14 +913,14 @@ export type FetchResourceResult<T extends NonNullish = NonNullish> =
 
 export type FetchOutputBasicResources = Record<string, FetchResourceResult>;
 
-export type FetchCompoundResourceResultValue<
+export interface FetchCompoundResourceResultValue<
   Type extends string = string,
   Value extends NonNullish = NonNullish
-> = {
+> {
   type: Type;
   value: Value;
   label?: string;
-};
+}
 
 export type FetchCompoundTextResourceResultValue =
   FetchCompoundResourceResultValue<"text", string>;
@@ -932,14 +931,14 @@ export type FetchCompoundResourceResultValues = Record<
   | FetchCompoundResourceResultValue<string & Record<never, never>, NonNullish>
 >;
 
-export type ExternalDataCompoundResourceResolvedResult = {
+export interface ExternalDataCompoundResourceResolvedResult {
   type: "object";
   value: FetchCompoundResourceResultValues;
-};
+}
 
-export type ExternalDataCompoundResourceRejectedResult = {
+export interface ExternalDataCompoundResourceRejectedResult {
   error: Error;
-};
+}
 
 export type FetchOutputCompoundResources = Record<
   string,
@@ -952,11 +951,11 @@ export type FetchOutputResources = Record<
   (FetchOutputBasicResources | FetchOutputCompoundResources)[string]
 >;
 
-export type RequestedExternalDataValue = {
+export interface RequestedExternalDataValue {
   id: ExternalReference["id"];
   widgetId: string;
   params?: ExternalParams;
-};
+}
 
 export type RequestedExternalData = Record<string, RequestedExternalDataValue>;
 
@@ -965,11 +964,11 @@ export type ExternalData = Record<
   (FetchOutputBasicResources | FetchOutputCompoundResources)[string]
 >;
 
-export type LocalReference<Value = unknown> = {
+export interface LocalReference<Value = unknown> {
   id: string;
   value: Value;
   widgetId: string;
-};
+}
 
 export type LocalTextReference = Omit<
   LocalReference<LocalizedText>,
@@ -981,39 +980,39 @@ export type CompiledLocalTextReference = Omit<
   "id" | "widgetId"
 > & { id: `local.${string}`; widgetId: "@easyblocks/local-text" };
 
-export type ExternalReferenceEmpty = {
+export interface ExternalReferenceEmpty {
   id: null;
   widgetId: string;
-};
+}
 
-export type ExternalReferenceNonEmpty<
+export interface ExternalReferenceNonEmpty<
   Identifier extends NonNullish = NonNullish
-> = {
+> {
   id: Identifier;
   widgetId: string;
   key?: string;
-};
+}
 
 export type ExternalReference<Identifier extends NonNullish = NonNullish> =
   | ExternalReferenceEmpty
   | ExternalReferenceNonEmpty<Identifier>;
 
-export type LocalValue<T = any> = {
+export interface LocalValue<T = any> {
   value: T;
   widgetId: string;
-};
+}
 
-export type TokenValue<T = any> = {
+export interface TokenValue<T = any> {
   value: T;
   tokenId?: string;
   widgetId?: string;
-};
+}
 
-export type AnyContextWithDefinitions = {
+export interface AnyContextWithDefinitions {
   definitions: InternalComponentDefinitions;
-};
+}
 
-export type EditorActions = {
+export interface EditorActions {
   notify: (message: string) => void;
   openComponentPicker: (config: {
     path: string;
@@ -1036,4 +1035,4 @@ export type EditorActions = {
     configChangeCallback: Callback
   ) => void;
   logSelectedItems: () => void;
-};
+}

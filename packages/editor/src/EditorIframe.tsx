@@ -1,49 +1,56 @@
+import React, { useMemo, useState, useCallback, memo } from "react";
+import styled from "styled-components";
 import { Colors } from "@easyblocks/design-system";
-import React, { useState } from "react";
-import styled, { css } from "styled-components";
 
 interface EditorIframeWrapperProps {
   width: number;
   height: number;
+  fullWidth: boolean;
   transform: string;
   containerRef: React.RefObject<HTMLDivElement>;
   canvasURL?: string;
 }
 
-function EditorIframe({
-  width,
-  height,
-  transform,
-  containerRef,
-  canvasURL,
-}: EditorIframeWrapperProps) {
-  const [isIframeReady, setIframeReady] = useState(false);
+export const EditorIframe = memo(
+  ({
+    width,
+    height,
+    fullWidth,
+    transform,
+    containerRef,
+    canvasURL,
+  }: EditorIframeWrapperProps) => {
+    const [, setIframeReady] = useState(false);
 
-  const handleIframeLoaded = () => {
-    setIframeReady(true);
-  };
+    const handleIframeLoaded = useCallback(() => {
+      setIframeReady(true);
+    }, []);
 
-  return (
-    <IframeContainer ref={containerRef}>
-      <IframeInnerContainer>
-        <Iframe
-          id="shopstory-canvas"
-          src={canvasURL || window.location.href}
-          onLoad={handleIframeLoaded}
-          style={{
-            // These properties will change a lot during resizing, so we don't pass it to styled component to prevent
-            // class name recalculations
-            width,
-            height,
-            transform,
-          }}
-        />
-      </IframeInnerContainer>
-    </IframeContainer>
-  );
-}
+    const style = useMemo(() => {
+      // These properties will change a lot during resizing, so we don't pass it to styled component to prevent
+      // class name recalculations
+      return {
+        width,
+        height,
+        transform,
+      };
+    }, [width, height, transform]);
 
-export { EditorIframe };
+    return (
+      <IframeContainer ref={containerRef}>
+        <IframeInnerContainer>
+          <Iframe
+            id="shopstory-canvas"
+            src={canvasURL || window.location.href}
+            onLoad={handleIframeLoaded}
+            data-width={fullWidth ? "full" : undefined}
+            style={style}
+          />
+        </IframeInnerContainer>
+      </IframeContainer>
+    );
+  }
+);
 
 const IframeContainer = styled.div`
   position: relative;
