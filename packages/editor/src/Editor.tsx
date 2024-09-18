@@ -37,6 +37,8 @@ import {
   PasteItemsEvent,
   RedoEvent,
   RemoveItemsEvent,
+  DuplicateItemsEvent,
+  ToggleItemEvent,
   SetFocussedFieldEvent,
   UndoEvent,
   componentPickerClosed,
@@ -804,6 +806,13 @@ const EditorContent = memo(
             return duplicateItems(form, fieldNames, compilationContext);
           });
         },
+        toggleItem: (path) => {
+          actions.runChange(() => {
+            const value = dotNotationGet(form.values, path);
+
+            form.change(path, { ...value, _disabled: !value._disabled });
+          });
+        },
         pasteItems: (what) => {
           actions.runChange(() => {
             setFocussedField((focussedField) => {
@@ -1027,6 +1036,8 @@ const EditorContent = memo(
           | FormChangeEvent
           | CanvasLoadedEvent
           | RemoveItemsEvent
+          | DuplicateItemsEvent
+          | ToggleItemEvent
           | PasteItemsEvent
           | MoveItemsEvent
           | LogSelectedEvent
@@ -1034,6 +1045,11 @@ const EditorContent = memo(
         switch (event.data.type) {
           case "@easyblocks-editor/remove-items": {
             actions.removeItems(event.data.payload.paths);
+            break;
+          }
+
+          case "@easyblocks-editor/duplicate-items": {
+            actions.duplicateItems(event.data.payload.paths);
             break;
           }
 
@@ -1048,6 +1064,11 @@ const EditorContent = memo(
               event.data.payload.direction
             );
 
+            break;
+          }
+
+          case "@easyblocks-editor/toggle-item": {
+            actions.toggleItem(event.data.payload.path);
             break;
           }
 

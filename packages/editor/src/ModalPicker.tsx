@@ -12,8 +12,6 @@ import {
 import { dotNotationGet } from "@easyblocks/utils";
 
 import { useEditorContext } from "./EditorContext";
-// import { SearchableSmallPickerModal } from "./SearchableSmallPickerModal";
-// import { SectionPickerModal } from "./SectionPicker";
 import { TemplatePicker, TemplatesDictionary } from "./TemplatePicker";
 import { OpenComponentPickerConfig } from "./types";
 import { unrollAcceptsFieldIntoComponents } from "./unrollAcceptsFieldIntoComponents";
@@ -132,6 +130,7 @@ export const ModalPicker = memo(({ config, onClose, pickers }: ModalProps) => {
       onClose: onModalClose,
       templates: templatesDictionary,
       mode: picker,
+      path: parentPath ? `${parentPath}.${fieldName}` : fieldName,
       domRect: config.domRect,
     })
   ) : (
