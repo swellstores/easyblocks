@@ -524,8 +524,10 @@ function calculateViewportRelatedStuff(
     throw new Error("can't find active device");
   }
 
+  const activeDeviceId = activeDevice.id;
+
   const activeDeviceIndex = devices.findIndex(
-    (device) => device.id === activeDevice.id
+    (device) => device.id === activeDeviceId
   );
 
   // Calculate width, height and scale
@@ -583,7 +585,7 @@ function calculateViewportRelatedStuff(
   }
 
   return {
-    breakpointIndex: activeDevice.id,
+    breakpointIndex: activeDeviceId,
     iframeSize: {
       fullWidth: width >= (availableSize?.width ?? 0),
       width,
