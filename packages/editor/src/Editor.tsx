@@ -189,6 +189,7 @@ interface EditorProps {
     | ComponentType<TokenTypeWidgetComponentProps<any>>
   >;
   components?: Record<string, ComponentType<any>>;
+  fullHeight?: boolean;
   canvasURL?: string;
   pickers?: Record<string, TemplatePicker>;
 }
@@ -248,101 +249,98 @@ function EditorBackendInitializer(props: EditorProps) {
   return <EditorWrapper {...props} document={document} />;
 }
 
-const EditorWrapper = memo(
-  (props: EditorProps & { document: Document | null }) => {
-    if (!props.document) {
-      if (props.rootTemplateId) {
-        if (props.rootComponentId) {
-          throw new Error(
-            "You can't pass both 'rootContainer' and 'rootTemplate' parameters to the editor"
-          );
-        }
+interface EditorWrapperProps extends EditorProps {
+  document: Document | null;
+}
 
-        const template = props.config.templates?.find(
-          (template) => template.id === props.rootTemplateId
+const EditorWrapper = memo((props: EditorWrapperProps) => {
+  if (!props.document) {
+    if (props.rootTemplateId) {
+      if (props.rootComponentId) {
+        throw new Error(
+          "You can't pass both 'rootContainer' and 'rootTemplate' parameters to the editor"
         );
+      }
 
-        if (!template) {
-          throw new Error(
-            `The template given in "rootTemplate" ("${props.rootTemplateId}") doesn't exist in Config.templates`
-          );
-        }
-      } else {
-        if (props.rootComponentId === null) {
-          throw new Error(
-            "When you create a new document you must pass a 'rootContainer' or 'rootTemplate' parameter to the editor"
-          );
-        }
+      const template = props.config.templates?.find(
+        (template) => template.id === props.rootTemplateId
+      );
 
-        if (
-          !props.config.components?.find(
-            (component) => component.id === props.rootComponentId
-          )
-        ) {
-          throw new Error(
-            `The component given in rootContainer ("${props.rootComponentId}") doesn't exist in Config.components`
-          );
-        }
+      if (!template) {
+        throw new Error(
+          `The template given in "rootTemplate" ("${props.rootTemplateId}") doesn't exist in Config.templates`
+        );
+      }
+    } else {
+      if (props.rootComponentId === null) {
+        throw new Error(
+          "When you create a new document you must pass a 'rootContainer' or 'rootTemplate' parameter to the editor"
+        );
+      }
+
+      if (
+        !props.config.components?.find(
+          (component) => component.id === props.rootComponentId
+        )
+      ) {
+        throw new Error(
+          `The component given in rootContainer ("${props.rootComponentId}") doesn't exist in Config.components`
+        );
       }
     }
-
-    // Locales
-    if (!props.config.locales) {
-      throw new Error("Required property Config.locales is empty");
-    }
-
-    const locale = useMemo(() => {
-      // very important to check locales correctness, circular references etc. Other functions
-      checkLocalesCorrectness(props.config.locales);
-      return props.locale ?? getDefaultLocale(props.config.locales).code;
-    }, [props.locale, props.config.locales]);
-
-    const rootTemplateEntry = useMemo(() => {
-      return props.rootTemplateId
-        ? props.config.templates?.find((t) => t.id === props.rootTemplateId)
-            ?.entry
-        : null;
-    }, [props.rootTemplateId, props.config.templates]);
-
-    const rootComponentId = props.document
-      ? props.document.entry._component
-      : rootTemplateEntry?._component ?? props.rootComponentId;
-
-    const compilationContext = useMemo(() => {
-      return createCompilationContext(
-        props.config,
-        { locale },
-        rootComponentId as string
-      );
-    }, [locale, props.config, rootComponentId]);
-
-    const initialEntry = useMemo(() => {
-      return props.document
-        ? adaptRemoteConfig(props.document.entry, compilationContext)
-        : normalize(
-            rootTemplateEntry ?? {
-              _id: uniqueId(),
-              _component: rootComponentId as string,
-            },
-            compilationContext
-          );
-    }, [
-      compilationContext,
-      props.document,
-      rootComponentId,
-      rootTemplateEntry,
-    ]);
-
-    return (
-      <EditorContent
-        {...props}
-        compilationContext={compilationContext}
-        initialDocument={props.document}
-        initialEntry={initialEntry}
-      />
-    );
   }
-);
+
+  // Locales
+  if (!props.config.locales) {
+    throw new Error("Required property Config.locales is empty");
+  }
+
+  const locale = useMemo(() => {
+    // very important to check locales correctness, circular references etc. Other functions
+    checkLocalesCorrectness(props.config.locales);
+    return props.locale ?? getDefaultLocale(props.config.locales).code;
+  }, [props.locale, props.config.locales]);
+
+  const rootTemplateEntry = useMemo(() => {
+    return props.rootTemplateId
+      ? props.config.templates?.find((t) => t.id === props.rootTemplateId)
+          ?.entry
+      : null;
+  }, [props.rootTemplateId, props.config.templates]);
+
+  const rootComponentId = props.document
+    ? props.document.entry._component
+    : rootTemplateEntry?._component ?? props.rootComponentId;
+
+  const compilationContext = useMemo(() => {
+    return createCompilationContext(
+      props.config,
+      { locale },
+      rootComponentId as string
+    );
+  }, [locale, props.config, rootComponentId]);
+
+  const initialEntry = useMemo(() => {
+    return props.document
+      ? adaptRemoteConfig(props.document.entry, compilationContext)
+      : normalize(
+          rootTemplateEntry ?? {
+            _id: uniqueId(),
+            _component: rootComponentId as string,
+          },
+          compilationContext
+        );
+  }, [compilationContext, props.document, rootComponentId, rootTemplateEntry]);
+
+  return (
+    <EditorContent
+      {...props}
+      compilationContext={compilationContext}
+      initialDocument={props.document}
+      initialEntry={initialEntry}
+    />
+  );
+});
 
 interface EditorContentProps extends EditorProps {
   compilationContext: CompilationContextType;
@@ -491,21 +489,17 @@ function useBuiltContent(
   return buildEntryResult;
 }
 
-interface ViewportValue {
-  value: string;
-  options: Record<string, string>;
-}
-
 function calculateViewportRelatedStuff(
-  viewport: ViewportValue,
+  viewport: string,
   devices: DeviceRange[],
   mainBreakpointIndex: string,
+  fullHeight: boolean,
   availableSize?: { width: number; height: number }
 ) {
   let activeDevice: DeviceRange | undefined;
 
   // Calculate active device
-  if (viewport.value === "fit-screen") {
+  if (viewport === "fit-screen") {
     if (!availableSize) {
       activeDevice = devices.find(
         (device) => device.id === mainBreakpointIndex
@@ -519,7 +513,7 @@ function calculateViewportRelatedStuff(
       activeDevice = matchingDevice;
     }
   } else {
-    activeDevice = devices.find((device) => device.id === viewport.value);
+    activeDevice = devices.find((device) => device.id === viewport);
   }
 
   if (activeDevice === undefined) {
@@ -534,7 +528,7 @@ function calculateViewportRelatedStuff(
 
   // Calculate width, height and scale
   let width: number, height: number;
-  let scaleFactor: number | null = null;
+  let scaleFactor: number = Number.NaN;
   let offsetY = 0;
 
   if (!availableSize) {
@@ -542,7 +536,7 @@ function calculateViewportRelatedStuff(
     width = 0;
     height = 0;
   } else {
-    if (viewport.value === "fit-screen") {
+    if (viewport === "fit-screen") {
       width = availableSize.width;
       height = availableSize.height;
     } else {
@@ -573,16 +567,8 @@ function calculateViewportRelatedStuff(
       }
     }
 
-    if (viewport.options.height === "max") {
+    if (fullHeight) {
       height = availableSize.height;
-    }
-
-    if (viewport.options.margin && width < availableSize.width) {
-      const margin = Number(viewport.options.margin);
-
-      if (Number.isFinite(margin)) {
-        height -= margin * 2;
-      }
     }
   }
 
@@ -592,10 +578,9 @@ function calculateViewportRelatedStuff(
       fullWidth: width >= (availableSize?.width ?? 0),
       width,
       height,
-      transform:
-        scaleFactor === null
-          ? "none"
-          : `translateY(${offsetY}px) scale(${scaleFactor})`,
+      transform: Number.isFinite(scaleFactor)
+        ? `translateY(${offsetY}px) scale(${scaleFactor})`
+        : "none",
     },
   };
 }
@@ -633,31 +618,14 @@ const EditorContent = memo(
     initialDocument,
     initialEntry,
     externalData,
+    fullHeight = false,
+    config,
+    onClose,
     ...props
   }: EditorContentProps) => {
-    const [currentViewport, setCurrentViewport] = useState<ViewportValue>(
-      () => {
-        return {
-          value: compilationContext.mainBreakpointIndex,
-          options: {},
-        };
-      }
+    const [currentViewport, setCurrentViewport] = useState<string>(
+      compilationContext.mainBreakpointIndex
     ); // "{ breakpoint }" or "fit-screen"
-
-    const onViewportChange = useCallback((viewport: string) => {
-      const [value, options = ""] = viewport.split(":");
-
-      setCurrentViewport({
-        value,
-        options: options
-          .split(",")
-          .reduce((acc: Record<string, string>, option) => {
-            const [key, value] = option.split("=");
-            acc[key] = value;
-            return acc;
-          }, {}),
-      });
-    }, []);
 
     const iframeContainerRef = useRef<HTMLIFrameElement>(null);
 
@@ -675,6 +643,7 @@ const EditorContent = memo(
         currentViewport,
         compilationContext.devices,
         compilationContext.mainBreakpointIndex,
+        fullHeight,
         availableSize
       );
     }, [
@@ -683,6 +652,7 @@ const EditorContent = memo(
       availableHeight,
       compilationContext.mainBreakpointIndex,
       compilationContext.devices,
+      fullHeight,
     ]);
 
     // re-render on resize (recalculates viewport size, active breakpoint for fit-screen etc);
@@ -893,11 +863,11 @@ const EditorContent = memo(
     const syncTemplates = useCallback(() => {
       getTemplates(
         editorContextRef.current as EditorContextType,
-        (props.config.templates as any[]) ?? []
+        (config.templates as any[]) ?? []
       ).then((newTemplates) => {
         setTemplates(newTemplates);
       });
-    }, [props.config.templates]);
+    }, [config.templates]);
 
     useEffect(() => {
       syncTemplates();
@@ -938,7 +908,7 @@ const EditorContent = memo(
 
       const editorContext: EditorContextType = {
         ...compilationContext,
-        backend: props.config.backend,
+        backend: config.backend,
         types: editorTypes,
         isAdminMode,
         templates,
@@ -957,7 +927,7 @@ const EditorContent = memo(
         },
         compilationCache: compilationCache,
         readOnly: props.readOnly,
-        disableCustomTemplates: props.config.disableCustomTemplates ?? false,
+        disableCustomTemplates: config.disableCustomTemplates ?? false,
         rootComponent: findComponentDefinitionById(
           initialEntry._component,
           compilationContext
@@ -980,8 +950,8 @@ const EditorContent = memo(
       isAdminMode,
       isEditing,
       props.components,
-      props.config.backend,
-      props.config.disableCustomTemplates,
+      config.backend,
+      config.disableCustomTemplates,
       props.readOnly,
       props.widgets,
       syncTemplates,
@@ -990,7 +960,7 @@ const EditorContent = memo(
 
     const { configAfterAuto, renderableContent, meta } = useBuiltContent(
       editorContext,
-      props.config,
+      config,
       editableData,
       externalData,
       props.onExternalDataChange
@@ -1106,7 +1076,7 @@ const EditorContent = memo(
           }
 
           case "@easyblocks-editor/change-responsive": {
-            onViewportChange(event.data.payload.device);
+            setCurrentViewport(event.data.payload.device);
             break;
           }
 
@@ -1229,7 +1199,7 @@ const EditorContent = memo(
       return () => {
         window.removeEventListener("message", handleEditorEvents);
       };
-    }, [actions, form, onViewportChange, handleSetFocussedField, redo, undo]);
+    }, [actions, form, handleSetFocussedField, redo, undo]);
 
     const shopstoryCanvasIframe = useRef<HTMLIFrameElement | null>(null);
 
@@ -1303,11 +1273,11 @@ const EditorContent = memo(
           "*"
         );
 
-        if (props.onClose) {
-          props.onClose();
+        if (onClose) {
+          onClose();
         }
       });
-    }, [props, saveNow]);
+    }, [saveNow, onClose]);
 
     const appHeight = heightMode === "viewport" ? "100vh" : "100%";
 
@@ -1337,8 +1307,8 @@ const EditorContent = memo(
                 onRedo={redo}
                 onClose={onTopBarClose}
                 devices={compilationContext.devices}
-                viewport={currentViewport.value}
-                onViewportChange={onViewportChange}
+                viewport={currentViewport}
+                onViewportChange={setCurrentViewport}
                 onIsEditingChange={handleSetEditing}
                 isEditing={isEditing}
                 saveLabel="Save"
@@ -1346,7 +1316,7 @@ const EditorContent = memo(
                 locales={editorContext.locales}
                 onLocaleChange={noop}
                 onAdminModeChange={onAdminModeChange}
-                hideCloseButton={props.config.hideCloseButton ?? false}
+                hideCloseButton={config.hideCloseButton ?? false}
                 readOnly={editorContext.readOnly}
               />
 
