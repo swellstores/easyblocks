@@ -79,7 +79,7 @@ export const EasyblocksEditor = memo<EasyblocksEditorProps>((props) => {
           onExternalDataChange={props.onExternalDataChange ?? (() => ({}))}
           widgets={props.widgets}
           components={props.components}
-          fullHeight={props.fullHeight}
+          scale={props.scale}
           canvasURL={props.canvasURL}
           readOnly={props.readOnly}
           locale={props.locale}

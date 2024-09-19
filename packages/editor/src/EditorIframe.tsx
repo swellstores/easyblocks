@@ -5,7 +5,6 @@ import { Colors } from "@easyblocks/design-system";
 interface EditorIframeWrapperProps {
   width: number;
   height: number;
-  fullWidth: boolean;
   transform: string;
   containerRef: React.RefObject<HTMLDivElement>;
   canvasURL?: string;
@@ -15,7 +14,6 @@ export const EditorIframe = memo(
   ({
     width,
     height,
-    fullWidth,
     transform,
     containerRef,
     canvasURL,
@@ -43,7 +41,6 @@ export const EditorIframe = memo(
             id="shopstory-canvas"
             src={canvasURL || window.location.href}
             onLoad={handleIframeLoaded}
-            data-width={fullWidth ? "full" : undefined}
             style={style}
           />
         </IframeInnerContainer>

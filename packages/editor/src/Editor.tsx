@@ -189,7 +189,7 @@ interface EditorProps {
     | ComponentType<TokenTypeWidgetComponentProps<any>>
   >;
   components?: Record<string, ComponentType<any>>;
-  fullHeight?: boolean;
+  scale?: boolean;
   canvasURL?: string;
   pickers?: Record<string, TemplatePicker>;
 }
@@ -493,7 +493,7 @@ function calculateViewportRelatedStuff(
   viewport: string,
   devices: DeviceRange[],
   mainBreakpointIndex: string,
-  fullHeight: boolean,
+  scale: boolean,
   availableSize?: { width: number; height: number }
 ) {
   let activeDevice: DeviceRange | undefined;
@@ -553,7 +553,7 @@ function calculateViewportRelatedStuff(
 
       if (activeDevice.w <= availableSize.width) {
         // fits
-      } else if (smallestNonScaledWidth <= availableSize.width) {
+      } else if (smallestNonScaledWidth <= availableSize.width || !scale) {
         // fits currently selected device range
         width = availableSize.width;
       } else {
@@ -566,16 +566,11 @@ function calculateViewportRelatedStuff(
         }
       }
     }
-
-    if (fullHeight) {
-      height = availableSize.height;
-    }
   }
 
   return {
     breakpointIndex: activeDeviceId,
     iframeSize: {
-      fullWidth: width >= (availableSize?.width ?? 0),
       width,
       height,
       transform: Number.isFinite(scaleFactor)
@@ -618,7 +613,7 @@ const EditorContent = memo(
     initialDocument,
     initialEntry,
     externalData,
-    fullHeight = false,
+    scale = true,
     config,
     onClose,
     ...props
@@ -643,7 +638,7 @@ const EditorContent = memo(
         currentViewport,
         compilationContext.devices,
         compilationContext.mainBreakpointIndex,
-        fullHeight,
+        scale,
         availableSize
       );
     }, [
@@ -652,7 +647,7 @@ const EditorContent = memo(
       availableHeight,
       compilationContext.mainBreakpointIndex,
       compilationContext.devices,
-      fullHeight,
+      scale,
     ]);
 
     // re-render on resize (recalculates viewport size, active breakpoint for fit-screen etc);
@@ -1325,7 +1320,6 @@ const EditorContent = memo(
                   <EditorIframe
                     width={iframeSize.width}
                     height={iframeSize.height}
-                    fullWidth={iframeSize.fullWidth}
                     transform={iframeSize.transform}
                     containerRef={iframeContainerRef}
                     canvasURL={props.canvasURL}

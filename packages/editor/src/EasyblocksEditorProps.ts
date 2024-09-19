@@ -25,7 +25,7 @@ export type EasyblocksEditorProps = {
     | ComponentType<InlineTypeWidgetComponentProps<any>>
   >;
   canvasURL?: string;
-  fullHeight?: boolean;
+  scale?: boolean;
   isCanvas?: boolean;
   pickers?: Record<string, TemplatePicker>;
   __debug?: boolean;
