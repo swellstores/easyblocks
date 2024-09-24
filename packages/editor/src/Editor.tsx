@@ -189,7 +189,6 @@ interface EditorProps {
     | ComponentType<TokenTypeWidgetComponentProps<any>>
   >;
   components?: Record<string, ComponentType<any>>;
-  scale?: boolean;
   canvasURL?: string;
   pickers?: Record<string, TemplatePicker>;
 }
@@ -493,7 +492,6 @@ function calculateViewportRelatedStuff(
   viewport: string,
   devices: DeviceRange[],
   mainBreakpointIndex: string,
-  scale: boolean,
   availableSize?: { width: number; height: number }
 ) {
   let activeDevice: DeviceRange | undefined;
@@ -553,7 +551,7 @@ function calculateViewportRelatedStuff(
 
       if (activeDevice.w <= availableSize.width) {
         // fits
-      } else if (smallestNonScaledWidth <= availableSize.width || !scale) {
+      } else if (smallestNonScaledWidth <= availableSize.width) {
         // fits currently selected device range
         width = availableSize.width;
       } else {
@@ -613,7 +611,6 @@ const EditorContent = memo(
     initialDocument,
     initialEntry,
     externalData,
-    scale = true,
     config,
     onClose,
     ...props
@@ -638,7 +635,6 @@ const EditorContent = memo(
         currentViewport,
         compilationContext.devices,
         compilationContext.mainBreakpointIndex,
-        scale,
         availableSize
       );
     }, [
@@ -647,7 +643,6 @@ const EditorContent = memo(
       availableHeight,
       compilationContext.mainBreakpointIndex,
       compilationContext.devices,
-      scale,
     ]);
 
     // re-render on resize (recalculates viewport size, active breakpoint for fit-screen etc);

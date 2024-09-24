@@ -35,7 +35,6 @@ interface EasyblocksParentProps {
     | ComponentType<InlineTypeWidgetComponentProps<any>>
   >;
   components?: Record<string, ComponentType<any>>;
-  scale?: boolean;
   canvasURL?: string;
   locale?: string;
   documentId?: string;
@@ -126,7 +125,6 @@ export const EasyblocksParent = memo<EasyblocksParentProps>((props) => {
             onExternalDataChange={props.onExternalDataChange}
             widgets={widgets}
             components={props.components}
-            scale={props.scale}
             canvasURL={props.canvasURL}
             pickers={pickers}
           />
