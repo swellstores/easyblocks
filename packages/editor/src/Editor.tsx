@@ -26,6 +26,7 @@ import {
 import {
   CompilationContextType,
   ComponentPickerOpenedEvent,
+  InternalComponentDefinition,
   ItemInsertedEvent,
   ItemMovedEvent,
   componentPickerClosed,
@@ -481,7 +482,7 @@ function calculateViewportRelatedStuff(
   mainBreakpointIndex: string,
   availableSize?: { width: number; height: number }
 ) {
-  let activeDevice: DeviceRange;
+  let activeDevice: DeviceRange | undefined;
 
   // Calculate active device
   if (viewport === "fit-screen") {
@@ -501,12 +502,16 @@ function calculateViewportRelatedStuff(
     activeDevice = devices.find((device) => device.id === viewport);
   }
 
-  const activeDeviceindex = devices.findIndex(
+  if (activeDevice === undefined) {
+    throw new Error("can't find active device");
+  }
+
+  const activeDeviceIndex = devices.findIndex(
     (device) => device.id === activeDevice.id
   );
 
   // Calculate width, height and scale
-  let width, height: number;
+  let width: number, height: number;
   let scaleFactor: number | null = null;
   let offsetY = 0;
 
@@ -520,7 +525,9 @@ function calculateViewportRelatedStuff(
       height = availableSize.height;
     } else {
       const smallestNonScaledWidth =
-        activeDeviceindex === 0 ? 0 : devices[activeDeviceindex - 1].breakpoint;
+        activeDeviceIndex === 0
+          ? 0
+          : devices[activeDeviceIndex - 1].breakpoint ?? 0;
 
       width = activeDevice.w;
       height =
