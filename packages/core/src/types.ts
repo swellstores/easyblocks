@@ -166,6 +166,7 @@ export type ComponentSchemaProp = SchemaPropShared<"component"> & {
   required?: boolean;
   noInline?: boolean;
   placeholderAppearance?: PlaceholderAppearance;
+  isNonChangable?: boolean;
 };
 
 export type ComponentCollectionSchemaProp =
