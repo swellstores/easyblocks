@@ -1,5 +1,6 @@
-import { InternalField } from "@swell/easyblocks-core/_internals";
 import React from "react";
+import { InternalField } from "@swell/easyblocks-core/_internals";
+
 import { Form, FormOptions } from "../../form";
 
 interface WatchableFormValue {
@@ -29,27 +30,17 @@ export function useForm<FormShape = any>(
   options.initialValues = options.initialValues || watch.values;
 
   const [, setValues] = React.useState(options.initialValues);
-  const [form, setForm] = React.useState<Form>(() => {
+
+  const form = React.useMemo<Form>(() => {
     return createForm(options, (form: any) => {
       setValues(form.values);
     });
-  });
-
-  React.useEffect(
-    function () {
-      if (form.id === options.id) return;
-      setForm(
-        createForm(options, (form: any) => {
-          setValues(form.values);
-        })
-      );
-    },
-    [options.id]
-  );
+  }, [options.id]);
 
   const [formIsLoading, setFormIsLoading] = React.useState(() =>
     loadInitialValues ? true : false
   );
+
   const loadFormData = React.useCallback(async () => {
     if (loadInitialValues) {
       setFormIsLoading(true);
@@ -62,9 +53,10 @@ export function useForm<FormShape = any>(
         });
     }
   }, [form, setFormIsLoading]);
+
   React.useEffect(() => {
     loadFormData();
-  }, [form, loadFormData]);
+  }, [loadFormData]);
 
   useUpdateFormFields(form, watch.fields);
   useUpdateFormLabel(form, watch.label);

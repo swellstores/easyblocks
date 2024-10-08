@@ -9,7 +9,7 @@ import {
   parsePath,
 } from "@swell/easyblocks-core/_internals";
 import { dotNotationGet } from "@easyblocks/utils";
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useCallback, memo } from "react";
 import { EditorContextType, useEditorContext } from "../EditorContext";
 import { pathToCompiledPath } from "../pathToCompiledPath";
 import { AddButton } from "./AddButton";
@@ -28,144 +28,153 @@ import {
   RICH_TEXT_PART_CONFIG_PATH_REGEXP,
 } from "../utils/isConfigPathRichTextPart";
 
-type SelectionFrameProps = {
+interface SelectionFrameProps {
   width: number;
   height: number;
   transform: string;
-};
+}
 
-function SelectionFrame({ width, height, transform }: SelectionFrameProps) {
-  const editorContext = useEditorContext();
-  const { focussedField, form, actions } = editorContext;
+export const SelectionFrame = memo(
+  ({ width, height, transform }: SelectionFrameProps): JSX.Element => {
+    const editorContext = useEditorContext();
+    const { focussedField, form, actions } = editorContext;
 
-  const compiledFocusedField =
-    focussedField.length === 1
-      ? pathToCompiledPath(focussedField[0], editorContext)
-      : undefined;
+    const compiledFocusedField =
+      focussedField.length === 1
+        ? pathToCompiledPath(focussedField[0], editorContext)
+        : undefined;
 
-  const compiledComponentConfig: CompiledShopstoryComponentConfig =
-    compiledFocusedField
-      ? dotNotationGet(
-          editorContext.compiledComponentConfig,
-          compiledFocusedField
-        )
-      : undefined;
+    const compiledComponentConfig: CompiledShopstoryComponentConfig =
+      compiledFocusedField
+        ? dotNotationGet(
+            editorContext.compiledComponentConfig,
+            compiledFocusedField
+          )
+        : undefined;
 
-  const { direction = "vertical" } = compiledComponentConfig?.__editing ?? {};
+    const { direction = "vertical" } = compiledComponentConfig?.__editing ?? {};
 
-  const isAddingEnabled = isAddingEnabledForSelectedFields(
-    focussedField,
-    editorContext
-  );
-
-  useLayoutEffect(() => {
-    if (focussedField.length === 0) {
-      hideAddButtons();
-    }
-  }, [focussedField]);
-
-  useLayoutEffect(() => {
-    function handleSelectionFrameMessages(
-      event: SelectionFramePositionChangedEvent
-    ) {
-      if (!isAddingEnabled) {
-        hideAddButtons();
-        return;
-      }
-
-      if (
-        event.data.type ===
-        "@easyblocks-editor/selection-frame-position-changed"
-      ) {
-        updateAddButtons(
-          direction,
-          event.data.payload.target,
-          {
-            width,
-            height,
-          },
-          event.data.payload.container
-        );
-      }
-    }
-
-    window.addEventListener("message", handleSelectionFrameMessages);
-
-    return () => {
-      window.removeEventListener("message", handleSelectionFrameMessages);
-    };
-  }, [direction, height, isAddingEnabled, width]);
-
-  async function handleAddButtonClick(
-    domRect: DOMRect,
-    which: "before" | "after"
-  ) {
-    let path = focussedField.length === 1 ? focussedField[0] : undefined;
-
-    if (!path) {
-      return;
-    }
-
-    if (isConfigPathRichTextPart(path)) {
-      path = path.replace(RICH_TEXT_PART_CONFIG_PATH_REGEXP, "");
-    }
-
-    const { parent, index } = parsePath(path, form);
-
-    if (!parent || index === undefined) {
-      return;
-    }
-
-    const definition = findComponentDefinitionById(
-      parent.templateId,
+    const isAddingEnabled = isAddingEnabledForSelectedFields(
+      focussedField,
       editorContext
     );
 
-    const schemaProp = definition?.schema.find(
-      (schemaProp) => schemaProp.prop === parent.fieldName
+    useLayoutEffect(() => {
+      if (focussedField.length === 0) {
+        hideAddButtons();
+      }
+    }, [focussedField]);
+
+    useLayoutEffect(() => {
+      function handleSelectionFrameMessages(
+        event: SelectionFramePositionChangedEvent
+      ) {
+        if (!isAddingEnabled) {
+          hideAddButtons();
+          return;
+        }
+
+        if (
+          event.data.type ===
+          "@easyblocks-editor/selection-frame-position-changed"
+        ) {
+          updateAddButtons(
+            direction,
+            event.data.payload.target,
+            {
+              width,
+              height,
+            },
+            event.data.payload.container
+          );
+        }
+      }
+
+      window.addEventListener("message", handleSelectionFrameMessages);
+
+      return () => {
+        window.removeEventListener("message", handleSelectionFrameMessages);
+      };
+    }, [direction, height, isAddingEnabled, width]);
+
+    const handleAddButtonClick = useCallback(
+      async (domRect: DOMRect, which: "before" | "after") => {
+        let path = focussedField.length === 1 ? focussedField[0] : undefined;
+
+        if (!path) {
+          return;
+        }
+
+        if (isConfigPathRichTextPart(path)) {
+          path = path.replace(RICH_TEXT_PART_CONFIG_PATH_REGEXP, "");
+        }
+
+        const { parent, index } = parsePath(path, form);
+
+        if (!parent || index === undefined) {
+          return;
+        }
+
+        const definition = findComponentDefinitionById(
+          parent.templateId,
+          editorContext
+        );
+
+        const schemaProp = definition?.schema.find(
+          (schemaProp) => schemaProp.prop === parent.fieldName
+        );
+
+        if (!schemaProp) {
+          return;
+        }
+
+        const parentPath =
+          parent.path + (parent.path === "" ? "" : ".") + parent.fieldName;
+
+        const config = await actions.openComponentPicker({
+          path: parentPath,
+          domRect,
+        });
+
+        if (config) {
+          actions.insertItem({
+            name:
+              schemaProp.type === "component-collection-localised"
+                ? `${parentPath}.${editorContext.contextParams.locale}`
+                : parentPath,
+            index: which === "before" ? index : index + 1,
+            block: config,
+          });
+        }
+      },
+      [editorContext, focussedField, form, actions]
     );
 
-    if (!schemaProp) {
-      return;
-    }
+    const onBeforeClick = useCallback(
+      (domRect: DOMRect): void => {
+        handleAddButtonClick(domRect, "before");
+      },
+      [handleAddButtonClick]
+    );
 
-    const parentPath =
-      parent.path + (parent.path === "" ? "" : ".") + parent.fieldName;
+    const onAfterClick = useCallback(
+      (domRect: DOMRect): void => {
+        handleAddButtonClick(domRect, "after");
+      },
+      [handleAddButtonClick]
+    );
 
-    const config = await actions.openComponentPicker({
-      path: parentPath,
-      domRect,
-    });
+    return (
+      <Wrapper>
+        <FrameWrapper width={width} height={height} transform={transform}>
+          <AddButton position="before" onClick={onBeforeClick} />
 
-    if (config) {
-      actions.insertItem({
-        name:
-          schemaProp.type === "component-collection-localised"
-            ? `${parentPath}.${editorContext.contextParams.locale}`
-            : parentPath,
-        index: which === "before" ? index : index + 1,
-        block: config,
-      });
-    }
+          <AddButton position="after" onClick={onAfterClick} />
+        </FrameWrapper>
+      </Wrapper>
+    );
   }
-
-  return (
-    <Wrapper>
-      <FrameWrapper width={width} height={height} transform={transform}>
-        <AddButton
-          position="before"
-          onClick={(domRect) => handleAddButtonClick(domRect, "before")}
-        />
-        <AddButton
-          position="after"
-          onClick={(domRect) => handleAddButtonClick(domRect, "after")}
-        />
-      </FrameWrapper>
-    </Wrapper>
-  );
-}
-
-export { SelectionFrame };
+);
 
 function updateAddButtons(
   direction: Required<EditingInfoBase>["direction"],

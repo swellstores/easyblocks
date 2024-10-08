@@ -1,21 +1,22 @@
 import { ExternalData } from "@swell/easyblocks-core";
-import React, { createContext, ReactNode, useContext } from "react";
+import React, { createContext, ReactNode, useContext, memo } from "react";
 
 const ExternalDataContext = createContext<ExternalData>({});
 
-function EditorExternalDataProvider({
-  children,
-  externalData,
-}: {
+interface EditorExternalDataProviderProps {
   children: ReactNode;
   externalData: ExternalData;
-}) {
-  return (
-    <ExternalDataContext.Provider value={externalData}>
-      {children}
-    </ExternalDataContext.Provider>
-  );
 }
+
+const EditorExternalDataProvider = memo(
+  ({ children, externalData }: EditorExternalDataProviderProps) => {
+    return (
+      <ExternalDataContext.Provider value={externalData}>
+        {children}
+      </ExternalDataContext.Provider>
+    );
+  }
+);
 
 function useEditorExternalData() {
   return useContext(ExternalDataContext);

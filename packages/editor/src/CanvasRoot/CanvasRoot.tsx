@@ -2,20 +2,20 @@ import React, { ReactNode } from "react";
 import { useEasyblocksCanvasContext } from "@swell/easyblocks-core/_internals";
 import { useCanvasGlobalKeyboardShortcuts } from "../useCanvasGlobalKeyboardShortcuts";
 
-type CanvasRootProps = {
+interface CanvasRootProps {
   children: ReactNode;
-};
+}
 
 function CanvasRoot(props: CanvasRootProps) {
   const canvasContext = useEasyblocksCanvasContext();
 
+  const { isEditing = false } = canvasContext ?? {};
+
+  useCanvasGlobalKeyboardShortcuts();
+
   if (!canvasContext) {
     return null;
   }
-
-  const { isEditing } = canvasContext;
-
-  useCanvasGlobalKeyboardShortcuts();
 
   return (
     <div

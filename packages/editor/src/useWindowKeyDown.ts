@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 
 export enum ExtraKeys {
   ALT_KEY = "altKey",
@@ -27,28 +27,32 @@ export const useWindowKeyDown = (
     isDisabled: false,
   }
 ) => {
-  const downHandler = (event: KeyboardEvent) => {
-    const isExtraKeysPressed = extraKeys.every((k) => event[k]);
-    const extraKeysSet = new Set([...extraKeys]);
+  const downHandler = useCallback(
+    (event: KeyboardEvent) => {
+      const isExtraKeysPressed = extraKeys.every((k) => event[k]);
+      const extraKeysSet = new Set([...extraKeys]);
 
-    const isOtherExtraKeysPressed = actionKeys
-      .filter((k) => !extraKeysSet.has(k))
-      .some((k) => event[k]);
+      const isOtherExtraKeysPressed = actionKeys
+        .filter((k) => !extraKeysSet.has(k))
+        .some((k) => event[k]);
 
-    if (event.key === key && isExtraKeysPressed && !isOtherExtraKeysPressed) {
-      event.preventDefault();
-      callback();
-    }
-  };
+      if (event.key === key && isExtraKeysPressed && !isOtherExtraKeysPressed) {
+        event.preventDefault();
+        callback();
+      }
+    },
+    [callback, extraKeys, key]
+  );
 
   useEffect(() => {
     if (!isDisabled) {
       document.body.addEventListener("keydown", downHandler);
-
       window.addEventListener("keydown", downHandler);
+
       return () => {
         window.removeEventListener("keydown", downHandler);
+        document.body.removeEventListener("keydown", downHandler);
       };
     }
-  }, [isDisabled]);
+  }, [isDisabled, downHandler]);
 };

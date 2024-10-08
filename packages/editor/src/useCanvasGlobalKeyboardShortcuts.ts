@@ -1,5 +1,4 @@
 import {
-  EditorContextType,
   duplicateConfig,
   useEasyblocksCanvasContext,
 } from "@swell/easyblocks-core/_internals";
@@ -88,11 +87,11 @@ const actions = {
 function useCanvasGlobalKeyboardShortcuts() {
   const canvasContext = useEasyblocksCanvasContext();
 
-  if (!canvasContext) {
-    return null;
-  }
-
-  const { formValues, definitions, focussedField } = canvasContext;
+  const {
+    formValues = {},
+    definitions = [],
+    focussedField = [],
+  } = canvasContext ?? {};
 
   useWindowKeyDown("z", actions.undo, {
     extraKeys: [ExtraKeys.META_KEY],
@@ -203,7 +202,7 @@ function useCanvasGlobalKeyboardShortcuts() {
       window.document.removeEventListener("cut", handleCut);
       window.document.removeEventListener("paste", handlePaste);
     };
-  });
+  }, [focussedField, formValues, definitions]);
 }
 
 function isTargetInputElement(target: EventTarget | null): boolean {

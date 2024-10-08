@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, memo } from "react";
+
 import { EasyblocksEditorProps } from "./EasyblocksEditorProps";
 import { EasyblocksParent } from "./EasyblocksParent";
 import { EasyblocksCanvas } from "./EditorChildWindow";
@@ -13,7 +14,7 @@ import {
 import EditableComponentBuilder from "./EditableComponentBuilder/EditableComponentBuilder.editor";
 import TypePlaceholder from "./Placeholder";
 
-export function EasyblocksEditor(props: EasyblocksEditorProps) {
+export const EasyblocksEditor = memo<EasyblocksEditorProps>((props) => {
   const [selectedWindow, setSelectedWindow] = useState<
     "parent" | "child" | "preview" | null
   >(props.isCanvas ? "child" : null);
@@ -56,11 +57,16 @@ export function EasyblocksEditor(props: EasyblocksEditorProps) {
     }
   }, []);
 
+  const queryParams = useMemo(
+    () => parseQueryParams(window.location.search),
+    [window.location.search]
+  );
+
   if (!selectedWindow) {
     return null;
   }
 
-  if (parseQueryParams().debug) {
+  if (queryParams.debug) {
     props = addDebugToEditorProps(props);
   }
 
@@ -73,6 +79,7 @@ export function EasyblocksEditor(props: EasyblocksEditorProps) {
           onExternalDataChange={props.onExternalDataChange ?? (() => ({}))}
           widgets={props.widgets}
           components={props.components}
+          scale={props.scale}
           canvasURL={props.canvasURL}
           readOnly={props.readOnly}
           locale={props.locale}
@@ -100,4 +107,4 @@ export function EasyblocksEditor(props: EasyblocksEditorProps) {
       {selectedWindow === "preview" && <PreviewRenderer {...props} />}
     </>
   );
-}
+});

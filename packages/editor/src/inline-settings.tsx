@@ -1,16 +1,19 @@
-import { InternalField } from "@swell/easyblocks-core/_internals";
-import React, { MouseEvent } from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
+import { InternalField } from "@swell/easyblocks-core/_internals";
+
 import { useEditorContext } from "./EditorContext";
 import { SidebarFooter } from "./SidebarFooter";
 import { FieldsBuilder } from "./tinacms/form-builder";
 import { StyleReset } from "./tinacms/styles";
 
+const resetStyle = { height: "100%" };
+
 interface InlineSettingsProps {
   fields: InternalField[];
 }
 
-export function InlineSettings({ fields }: InlineSettingsProps) {
+export const InlineSettings = memo(({ fields }: InlineSettingsProps) => {
   const hasNoExtraFields = !(fields && fields.length);
 
   if (hasNoExtraFields) {
@@ -18,12 +21,13 @@ export function InlineSettings({ fields }: InlineSettingsProps) {
   }
 
   return (
-    <StyleReset style={{ height: "100%" }}>
+    <StyleReset style={resetStyle}>
       {/* IMPORTANT: This stop propagation fixes issues with toggle unclicking */}
       <SettingsContent fields={fields} />
     </StyleReset>
   );
-}
+});
+
 interface SettingsContentProps {
   title?: string;
   fields: InternalField[];
@@ -33,7 +37,7 @@ function SettingsContent({ fields }: SettingsContentProps) {
   const { form, focussedField } = useEditorContext();
 
   return (
-    <FormBody id={"sidebar-panels-root"}>
+    <FormBody id="sidebar-panels-root">
       <Wrapper>
         <FieldsBuilder form={form} fields={fields} />
         <SidebarFooter paths={focussedField} />
