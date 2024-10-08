@@ -164,7 +164,8 @@ export interface ComponentSchemaProp extends SchemaPropShared<"component"> {
   required?: boolean;
   noInline?: boolean;
   placeholderAppearance?: PlaceholderAppearance;
-}
+  isNonChangable?: boolean;
+};
 
 export interface ComponentCollectionSchemaProp
   extends SchemaPropShared<"component-collection"> {

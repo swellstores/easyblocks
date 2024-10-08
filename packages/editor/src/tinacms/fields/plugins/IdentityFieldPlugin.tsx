@@ -64,7 +64,10 @@ function IdentityField({ input, field }: IdentityFieldProps) {
   const isClosable = isRootComponent && editorContext.focussedField.length > 0;
 
   const isNonChangable =
-    componentDefinition?.id === "@easyblocks/rich-text-part" || isRootComponent;
+    componentDefinition?.id === "@easyblocks/rich-text-part" ||
+    isRootComponent ||
+    (parentSchemaProp?.type === "component" &&
+      (parentSchemaProp as ComponentSchemaProp).isNonChangable);
 
   function handleChangeComponentType() {
     if (isNonChangable) {
