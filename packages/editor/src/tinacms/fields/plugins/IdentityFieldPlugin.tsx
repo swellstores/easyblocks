@@ -168,6 +168,7 @@ function IdentityField({ input, field }: IdentityFieldProps) {
 
         {!isNonChangable && (
           <ButtonGhost
+            ref={changeComponentButton}
             title="Replace component"
             onClick={handleChangeComponentType}
           >
