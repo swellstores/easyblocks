@@ -1208,15 +1208,16 @@ const EditorContent = memo(
     const sendCanvasData = useCallback(() => {
       setFocussedField((focussedField) => {
         setEditing((isEditing) => {
+          const cleanedCompiled = { ...renderableContent, __editing: null };
           shopstoryCanvasIframe.current?.contentWindow?.postMessage(
             {
               type: "@easyblocks/canvas-data",
               data: JSON.stringify({
-                compiled: renderableContent,
+                compiled: cleanedCompiled,
                 meta,
                 externalData: externalData,
                 formValues: form.values,
-                definitions: editorContext.definitions,
+                definitions: [],
                 locale: editorContext.contextParams.locale,
                 locales: editorContext.locales,
                 isEditing,
