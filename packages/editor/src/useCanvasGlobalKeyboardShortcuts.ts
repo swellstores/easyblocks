@@ -21,6 +21,17 @@ const GLOBAL_SHORTCUTS_KEYS = [
 const DATA_TRANSFER_FORMAT = "text/x-shopstory";
 
 const actions = {
+  focusNone: () => {
+    window.parent.postMessage(
+      {
+        type: "@easyblocks-editor/focus",
+        payload: {
+          target: [],
+        },
+      },
+      "*"
+    );
+  },
   undo: () => {
     window.parent.postMessage(
       {
@@ -131,6 +142,8 @@ function useCanvasGlobalKeyboardShortcuts() {
         actions.moveItems(focussedField, "bottom");
       } else if (event.key.toUpperCase() === "L") {
         actions.logSelectedItems();
+      } else if (event.key === "Escape" && isAnyFieldSelected(focussedField)) {
+        actions.focusNone();
       }
     }
 
