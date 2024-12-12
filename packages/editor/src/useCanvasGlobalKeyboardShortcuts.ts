@@ -16,6 +16,7 @@ const GLOBAL_SHORTCUTS_KEYS = [
   "ArrowRight",
   "l",
   "L",
+  "Escape",
 ];
 
 const DATA_TRANSFER_FORMAT = "text/x-shopstory";
@@ -142,7 +143,7 @@ function useCanvasGlobalKeyboardShortcuts() {
         actions.moveItems(focussedField, "bottom");
       } else if (event.key.toUpperCase() === "L") {
         actions.logSelectedItems();
-      } else if (event.key === "Escape" && isAnyFieldSelected(focussedField)) {
+      } else if (event.key === "Escape") {
         actions.focusNone();
       }
     }
