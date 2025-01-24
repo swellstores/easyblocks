@@ -775,7 +775,7 @@ const EditorContent = memo(
           actions.runChange(() => {
             const value = dotNotationGet(form.values, path);
 
-            form.change(path, { ...value, _disabled: !value._disabled });
+            form.change(path, { ...value, disabled: !value.disabled });
           });
         },
         pasteItems: (what) => {

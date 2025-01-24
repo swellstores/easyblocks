@@ -315,7 +315,7 @@ export type InternalNoCodeComponentProps = NoCodeComponentProps & {
 function ComponentBuilder(props: ComponentBuilderProps): ReactElement | null {
   const { compiled, passedProps, path, components, ...restProps } = props;
 
-  if (compiled._disabled) {
+  if (compiled.disabled) {
     return <Fragment key={compiled._id} />;
   }
 
