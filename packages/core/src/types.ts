@@ -165,7 +165,7 @@ export interface ComponentSchemaProp extends SchemaPropShared<"component"> {
   noInline?: boolean;
   placeholderAppearance?: PlaceholderAppearance;
   isNonChangable?: boolean;
-};
+}
 
 export interface ComponentCollectionSchemaProp
   extends SchemaPropShared<"component-collection"> {
@@ -754,7 +754,7 @@ export interface CompiledComponentConfigBase<
 > {
   _component: Identifier; // instance of the component (unique id)
   _id: string;
-  _disabled: boolean;
+  disabled: boolean;
   props: Props;
 }
 

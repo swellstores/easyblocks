@@ -1198,7 +1198,7 @@ export function normalizeComponent(
   const ret: NoCodeComponentEntry = {
     _id: configComponent._id ?? uniqueId(),
     _component: configComponent._component,
-    _disabled: Boolean(configComponent._disabled),
+    disabled: Boolean(configComponent.disabled),
   };
 
   // Normalize itemProps (before own props). If component definition is missing, we still normalize item props
