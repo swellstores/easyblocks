@@ -12,7 +12,7 @@
     "lint:all": "nx run-many --target lint -- --quiet",
     "check": "nx run-many --target check",
     "prepare": "husky install",
-    "publish-prerelease": "npm run build && lerna publish from-git",
+    "publish-prerelease": "lerna version --no-private && npm run build && lerna publish from-git",
     "supabase-start": "supabase start",
     "supabase-stop": "supabase stop",
     "supabase-restart": "npm run supabase-stop && npm run supabase-start"
