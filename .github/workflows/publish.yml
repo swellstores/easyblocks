@@ -12,6 +12,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -48,7 +49,7 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor}}@users.noreply.github.com"
 
-          if [ ${{ github.base_ref }} = development ]; then
+          if [ ${{ github.event.pull_request.base.ref }} != main ]; then
             npx lerna version --conventional-commits --conventional-prerelease --preid beta --yes
           else
             npx lerna version --conventional-commits --conventional-graduate --yes
@@ -58,4 +59,3 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
