@@ -690,8 +690,16 @@ const EditorContent = memo(
 
     const sidebarNodeRef = useRef<HTMLDivElement | null>(null);
 
+    const formId = useMemo(() => {
+      const documentPrefix = initialDocument?.id
+        ? `-${initialDocument.id}`
+        : "";
+
+      return `easyblocks-editor-${initialEntry._id}${documentPrefix}`;
+    }, [initialEntry._id, initialDocument?.id]);
+
     const [editableData, form] = useForm({
-      id: `easyblocks-editor-${initialEntry._id}`,
+      id: formId,
       label: "Edit entry",
       fields: [],
       initialValues: initialEntry,
