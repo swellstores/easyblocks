@@ -50,6 +50,9 @@ jobs:
 
           npx lerna version --conventional-commits --conventional-graduate --yes
 
+          git status
+          git log -3
+
           npx lerna publish from-git --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
