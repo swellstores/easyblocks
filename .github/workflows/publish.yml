@@ -48,7 +48,7 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor}}@users.noreply.github.com"
 
-          npx lerna version --conventional-commits --conventional-graduate --yes
+          # npx lerna version --conventional-commits --conventional-graduate --yes
 
           git status
           git log -3
