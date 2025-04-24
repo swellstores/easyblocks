@@ -1051,7 +1051,7 @@ const EditorContent = memo(
           }
 
           case "@easyblocks-editor/canvas-loaded": {
-            setCanvasLoaded(true);
+            setCanvasLoaded((loaded) => !loaded);
             break;
           }
 
