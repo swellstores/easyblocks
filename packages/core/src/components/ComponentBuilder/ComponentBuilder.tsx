@@ -516,6 +516,7 @@ function mapExternalProps(
         // FIXME: this is a mess
         (!isTrulyResponsiveValue(propValue) &&
           typeof propValue === "object" &&
+          propValue !== null &&
           "id" in propValue &&
           "widgetId" in propValue &&
           !("value" in propValue)) ||
@@ -523,7 +524,7 @@ function mapExternalProps(
           responsiveValueValues(propValue).every(
             (v) =>
               typeof v === "object" &&
-              v &&
+              v !== null &&
               "id" in v &&
               "widgetId" in v &&
               !("value" in v)
