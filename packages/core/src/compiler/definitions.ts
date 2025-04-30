@@ -658,7 +658,9 @@ export const schemaPropDefinitions: SchemaPropDefinitionProviders = {
       normalize: (value) => {
         if (customTypeDefinition.type === "inline") {
           const defaultValue =
-            schemaProp.defaultValue ?? customTypeDefinition.defaultValue;
+            typeof schemaProp.defaultValue !== "undefined"
+              ? schemaProp.defaultValue
+              : customTypeDefinition.defaultValue;
 
           const normalizeScalar = (v: any) => {
             if (isLocalValue(v)) {
