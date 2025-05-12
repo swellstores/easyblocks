@@ -43,6 +43,7 @@ interface EasyblocksParentProps {
   rootTemplate?: string;
   readOnly?: boolean;
   pickers?: Record<string, TemplatePicker>;
+  disableShortcuts?: boolean;
 }
 
 const shouldForwardProp: ShouldForwardProp<"web"> = (propName, target) => {
@@ -129,6 +130,7 @@ export const EasyblocksParent = memo<EasyblocksParentProps>((props) => {
             scale={props.scale}
             canvasURL={props.canvasURL}
             pickers={pickers}
+            disableShortcuts={props.disableShortcuts}
           />
         </TooltipProvider>
 

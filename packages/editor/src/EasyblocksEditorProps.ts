@@ -34,4 +34,5 @@ export type EasyblocksEditorProps = {
   locale?: string;
   documentId?: string;
   readOnly?: boolean;
+  disableShortcuts?: boolean;
 };
