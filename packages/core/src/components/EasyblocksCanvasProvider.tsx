@@ -25,6 +25,7 @@ export type EasyblocksCanvasState = {
   devices: EditorContextType["devices"];
   focussedField: EditorContextType["focussedField"];
   components: Record<string, ComponentType<any>>;
+  disableShortcuts: boolean;
 };
 
 const EasyblocksCanvasContext = createContext<EasyblocksCanvasState | null>(

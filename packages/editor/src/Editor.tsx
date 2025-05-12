@@ -192,6 +192,7 @@ interface EditorProps {
   scale?: boolean;
   canvasURL?: string;
   pickers?: Record<string, TemplatePicker>;
+  disableShortcuts?: boolean;
 }
 
 export const Editor = memo(EditorBackendInitializer);
@@ -1231,6 +1232,7 @@ const EditorContent = memo(
                 isEditing,
                 devices: editorContext.devices,
                 focussedField,
+                disableShortcuts: Boolean(props.disableShortcuts),
               }),
             },
             "*"
@@ -1243,9 +1245,9 @@ const EditorContent = memo(
       });
     }, [
       editorContext.contextParams.locale,
-      editorContext.definitions,
       editorContext.devices,
       editorContext.locales,
+      props.disableShortcuts,
       externalData,
       form.values,
       meta,

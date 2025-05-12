@@ -87,6 +87,7 @@ export const EasyblocksEditor = memo<EasyblocksEditorProps>((props) => {
           rootTemplate={props.rootTemplate}
           rootComponent={props.rootComponent}
           pickers={props.pickers}
+          disableShortcuts={props.disableShortcuts}
         />
       )}
 

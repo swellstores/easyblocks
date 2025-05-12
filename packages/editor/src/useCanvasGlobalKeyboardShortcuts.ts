@@ -103,29 +103,34 @@ function useCanvasGlobalKeyboardShortcuts() {
     formValues = {},
     definitions = [],
     focussedField = [],
+    disableShortcuts = false,
   } = canvasContext ?? {};
 
   useWindowKeyDown("z", actions.undo, {
     extraKeys: [ExtraKeys.META_KEY],
-    isDisabled: false,
+    isDisabled: disableShortcuts,
   });
 
   useWindowKeyDown("z", actions.redo, {
     extraKeys: [ExtraKeys.META_KEY, ExtraKeys.SHIFT_KEY],
-    isDisabled: false,
+    isDisabled: disableShortcuts,
   });
 
   useWindowKeyDown("z", actions.undo, {
     extraKeys: [ExtraKeys.CTRL_KEY],
-    isDisabled: false,
+    isDisabled: disableShortcuts,
   });
 
   useWindowKeyDown("y", actions.redo, {
     extraKeys: [ExtraKeys.CTRL_KEY],
-    isDisabled: false,
+    isDisabled: disableShortcuts,
   });
 
   useEffect(() => {
+    if (disableShortcuts) {
+      return;
+    }
+
     function handleKeydown(event: KeyboardEvent): void {
       if (isTargetInputElement(event.target)) {
         return;
@@ -216,7 +221,7 @@ function useCanvasGlobalKeyboardShortcuts() {
       window.document.removeEventListener("cut", handleCut);
       window.document.removeEventListener("paste", handlePaste);
     };
-  }, [focussedField, formValues, definitions]);
+  }, [focussedField, formValues, definitions, disableShortcuts]);
 }
 
 function isTargetInputElement(target: EventTarget | null): boolean {
