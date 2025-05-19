@@ -932,6 +932,7 @@ const EditorContent = memo(
         compilationCache: compilationCache,
         readOnly: props.readOnly,
         disableCustomTemplates: config.disableCustomTemplates ?? false,
+        disableShortcuts: Boolean(props.disableShortcuts),
         rootComponent: findComponentDefinitionById(
           initialEntry._component,
           compilationContext
@@ -958,6 +959,7 @@ const EditorContent = memo(
       config.disableCustomTemplates,
       props.readOnly,
       props.widgets,
+      props.disableShortcuts,
       syncTemplates,
       templates,
     ]);
