@@ -20,7 +20,15 @@ const DATA_TRANSFER_FORMAT = "text/x-shopstory";
 
 function useEditorGlobalKeyboardShortcuts(editorContext: EditorContextType) {
   useEffect(() => {
-    const { focussedField: focusedFields, actions } = editorContext;
+    const {
+      focussedField: focusedFields,
+      actions,
+      disableShortcuts = false,
+    } = editorContext;
+
+    if (disableShortcuts) {
+      return;
+    }
 
     function handleKeydown(event: KeyboardEvent): void {
       if (isTargetInputElement(event.target)) {

@@ -62,6 +62,7 @@ export type EditorContextType = Omit<
   isAdminMode: boolean;
   readOnly: boolean;
   disableCustomTemplates: boolean;
+  disableShortcuts: boolean;
   types: Record<
     string,
     | EditorExternalTypeDefinition
