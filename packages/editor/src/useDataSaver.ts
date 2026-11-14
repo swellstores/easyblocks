@@ -71,15 +71,10 @@ export function useDataSaver(
 
     // New document
     if (remoteDocument.current === null) {
-      console.debug("New document");
-
       // There must be at least one change in order to create a new document, we're not storing empty temporary documents
       if (isConfigTheSame) {
-        console.debug("no change -> bye");
         return;
       }
-
-      console.debug("change detected! -> create");
 
       const newDocument = await editorContext.backend.documents.create({
         entry: configToSaveWithLocalisedFlag,
@@ -99,8 +94,6 @@ export function useDataSaver(
     }
     // Document update
     else {
-      console.debug("Existing document");
-
       const latestDocument = await editorContext.backend.documents.get({
         id: remoteDocument.current.id,
       });
@@ -112,8 +105,6 @@ export function useDataSaver(
 
       // Newer version of document is available
       if (isNewerDocumentVersionAvailable) {
-        console.debug("new remote version detected, updating");
-
         const latestConfig = removeLocalizedFlag(
           latestDocument.entry,
           editorContext
@@ -128,8 +119,6 @@ export function useDataSaver(
 
         // Notify when local config was modified
         if (!isConfigTheSame) {
-          console.debug("there were local changes -> notify");
-
           editorContext.actions.notify(
             "Remote changes detected, local changes have been overwritten."
           );
@@ -140,11 +129,8 @@ export function useDataSaver(
       // No remote change occurred
       else {
         if (isConfigTheSame) {
-          console.debug("no local changes -> bye");
           // Let's do nothing, no remote and local change
         } else {
-          console.debug("updating the document", remoteDocument.current.id);
-
           const updatedDocument = await editorContext.backend.documents.update({
             id: remoteDocument.current.id,
             entry: configToSaveWithLocalisedFlag,
@@ -176,7 +162,6 @@ export function useDataSaver(
     }, 5000);
 
     return () => {
-      console.log("clearing");
       clearInterval(interval);
     };
   }, [initialDocument, onTick]);
@@ -195,7 +180,6 @@ export function useDataSaver(
       }
     }
 
-    console.debug("Last save!");
     await onTick();
   }, [onTick]);
 

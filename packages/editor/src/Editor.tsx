@@ -975,15 +975,6 @@ const EditorContent = memo(
     editorContext.compiledComponentConfig = renderableContent;
     editorContext.configAfterAuto = configAfterAuto;
 
-    console.debug("editable data", editableData);
-    console.debug("focused field", focussedField);
-    console.debug("meta", meta);
-    console.debug("compiled config", {
-      configAfterAuto,
-      renderableContent,
-    });
-    console.debug("external data", externalData);
-
     window.editorWindowAPI = window.editorWindowAPI || {};
     window.editorWindowAPI.editorContext = editorContext;
     window.editorWindowAPI.meta = meta;
